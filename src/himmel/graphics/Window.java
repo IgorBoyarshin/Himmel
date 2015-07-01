@@ -28,23 +28,31 @@ public class Window {
     private InputMouse mouse;
 
     private final boolean RESIZABLE = false;
-    private final int SWAP_INTERWAL = 1;
+    private final int SWAP_INTERWAL;
+    private final boolean LOG_INFO;
 
-    public Window(String title, int width, int height) {
+    public Window(String title, int width, int height, boolean vsync, boolean log) {
         this.TITLE = title;
-
         this.WIDTH = width;
         this.HEIGHT = height;
+        this.SWAP_INTERWAL = vsync ? 1 : 0;
+        this.LOG_INFO = log;
 
-        Log.logInfo("Starting Himmel");
+        if (LOG_INFO) {
+            Log.logInfo("Starting Himmel");
+        }
 
-        if(!init()) {
-            Log.logError("Could not start the Himmel");
+        if (!init()) {
+            if (LOG_INFO) {
+                Log.logError("Could not start the Himmel");
+            }
             glfwTerminate();
             System.exit(0);
         }
 
-        Log.logInfo("OpenGL version: " + getOpenglVersion());
+        if (LOG_INFO) {
+            Log.logInfo("OpenGL version: " + getOpenglVersion());
+        }
     }
 
     public void update() {
@@ -70,7 +78,9 @@ public class Window {
     }
 
     public void terminate() {
-        Log.logInfo("Terminating Himmel");
+        if (LOG_INFO) {
+            Log.logInfo("Terminating Himmel");
+        }
 
         glfwDestroyWindow(glfwWindow);
         glfwTerminate();
@@ -83,7 +93,7 @@ public class Window {
     private boolean init() {
 //        System.out.println("LWJGL " + Sys.getVersion());
 
-        if ( glfwInit() != GL11.GL_TRUE ) {
+        if (glfwInit() != GL11.GL_TRUE) {
             Log.logError("Unable to init GLFW");
             return false;
         }
@@ -94,7 +104,7 @@ public class Window {
 
         glfwWindow = glfwCreateWindow(WIDTH, HEIGHT, TITLE, NULL, NULL);
 
-        if ( glfwWindow == NULL ) {
+        if (glfwWindow == NULL) {
             Log.logError("Unable to creat GLFW Window");
             return false;
         }
