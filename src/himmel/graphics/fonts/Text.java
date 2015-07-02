@@ -41,6 +41,7 @@ public class Text extends Renderable {
         super(null, null, null, textRenderer, shader);
         this.text = text;
         this.color = mainColor;
+        modelMatrix = Matrix4f.identity();
         checkAndSetFontSize(DEFAULT_FONT_SIZE);
         compileSentence(text);
     }
@@ -49,6 +50,7 @@ public class Text extends Renderable {
         super(null, null, null, textRenderer, shader);
         this.text = text;
         this.color = mainColor;
+        modelMatrix = Matrix4f.identity();
         checkAndSetFontSize(fontSize);
         compileSentence(text);
     }
@@ -57,6 +59,7 @@ public class Text extends Renderable {
         super(null, null, null, textRenderer, shader);
         this.text = text;
         this.color = color;
+        modelMatrix = Matrix4f.identity();
         checkAndSetFontSize(fontSize);
         compileSentence(text);
     }
@@ -66,6 +69,7 @@ public class Text extends Renderable {
 //        font = new Font("src//himmel//resources//FontCalibri");
         this.text = text;
         color = new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
+        modelMatrix = Matrix4f.identity();
         checkAndSetFontSize(fontSize);
         compileSentence(text);
     }
