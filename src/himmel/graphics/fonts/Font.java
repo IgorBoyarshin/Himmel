@@ -25,7 +25,6 @@ public class Font {
     private Map<Character, Vector4f> parameters;
     private int size;
 
-
     public Font(String fontName) {
         fontTexture = new Texture(fontName + ".png", Texture.TYPE_RGB);
         parameters = loadParameters(fontName + ".hfp");

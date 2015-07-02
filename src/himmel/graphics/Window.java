@@ -55,6 +55,30 @@ public class Window {
         }
     }
 
+    public Window(String title, int width, int height) {
+        this.TITLE = title;
+        this.WIDTH = width;
+        this.HEIGHT = height;
+        this.SWAP_INTERWAL = 1;
+        this.LOG_INFO = false;
+
+        if (LOG_INFO) {
+            Log.logInfo("Starting Himmel");
+        }
+
+        if (!init()) {
+            if (LOG_INFO) {
+                Log.logError("Could not start the Himmel");
+            }
+            glfwTerminate();
+            System.exit(0);
+        }
+
+        if (LOG_INFO) {
+            Log.logInfo("OpenGL version: " + getOpenglVersion());
+        }
+    }
+
     public void update() {
         glfwPollEvents();
         glfwSwapBuffers(glfwWindow);
