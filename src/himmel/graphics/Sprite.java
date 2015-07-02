@@ -6,6 +6,8 @@ import himmel.math.Vector2f;
 import himmel.math.Vector3f;
 import himmel.math.Vector4f;
 
+import java.util.List;
+
 /**
  * Created by Igor on 22-May-15.
  */
@@ -37,6 +39,14 @@ public class Sprite extends Renderable {
     public void setNewPosition(Vector3f position) {
         vertices = convertVertices(position, size);
         this.position = position;
+    }
+
+    public List<Vector2f> getUv() {
+        return uv;
+    }
+
+    public void setUv(List<Vector2f> newUv) {
+        this.uv = newUv;
     }
 
     public void setSize(Vector2f size) {
