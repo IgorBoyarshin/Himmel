@@ -28,9 +28,9 @@ public class Text extends Renderable {
     private String text;
 
     private int fontSize;
-    private static final int MIN_FONT_SIZE = 8;
-    private static final int MAX_FONT_SIZE = 6000;
-    private static final int DEFAULT_FONT_SIZE = 100;
+    private static final int MIN_FONT_SIZE = 1;
+    private static final int MAX_FONT_SIZE = 1000;
+    private static final int DEFAULT_FONT_SIZE = 20;
 
     private static Font font;
     //    private static Font font = new Font("src//himmel//resources//FontCalibri");
@@ -80,6 +80,8 @@ public class Text extends Renderable {
         } else {
             this.fontSize = DEFAULT_FONT_SIZE;
         }
+
+        recalculateVertices();
     }
 
     public void setFontSize(int size) {
