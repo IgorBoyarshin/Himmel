@@ -20,42 +20,66 @@ public class Text extends Renderable {
     Should UVs match the number of vertices or indices??
      */
 
-    private Vector2f size;
+    //    private Vector2f size;
     private Vector4f color;
     private static final float FILE_SIZE = 512.0f;
 
     //    private Font font;
     private String text;
 
+    private int fontSize;
+    private static final int MIN_FONT_SIZE = 8;
+    private static final int MAX_FONT_SIZE = 6000;
+    private static final int DEFAULT_FONT_SIZE = 100;
+
     private static Font font;
-//    private static Font font = new Font("src//himmel//resources//FontCalibri");
+    //    private static Font font = new Font("src//himmel//resources//FontCalibri");
     private static Renderer textRenderer = new TextRenderer();
     private static Shader shader;
 
-    public Text(String text, Vector4f mainColor, Matrix4f model) {
+    public Text(String text, Vector4f mainColor) {
         super(null, null, null, textRenderer, shader);
         this.text = text;
         this.color = mainColor;
-        this.modelMatrix = model;
+        checkAndSetFontSize(DEFAULT_FONT_SIZE);
         compileSentence(text);
     }
 
-    public Text(String text, Vector4f color, Matrix4f model, Shader shader) {
+    public Text(String text, int fontSize, Vector4f mainColor) {
         super(null, null, null, textRenderer, shader);
-//        font = new Font("src//himmel//resources//FontCalibri");
+        this.text = text;
+        this.color = mainColor;
+        checkAndSetFontSize(fontSize);
+        compileSentence(text);
+    }
+
+    public Text(String text, Vector4f color, int fontSize, Shader shader) {
+        super(null, null, null, textRenderer, shader);
         this.text = text;
         this.color = color;
-        this.modelMatrix = model;
+        checkAndSetFontSize(fontSize);
         compileSentence(text);
     }
 
-    public Text(String text, Matrix4f model, Shader shader) {
+    public Text(String text, int fontSize, Shader shader) {
         super(null, null, null, textRenderer, shader);
 //        font = new Font("src//himmel//resources//FontCalibri");
         this.text = text;
-        this.modelMatrix = model;
         color = new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
+        checkAndSetFontSize(fontSize);
         compileSentence(text);
+    }
+
+    private void checkAndSetFontSize(int size) {
+        if (size >= MIN_FONT_SIZE && size <= MAX_FONT_SIZE) {
+            this.fontSize = size;
+        } else {
+            this.fontSize = DEFAULT_FONT_SIZE;
+        }
+    }
+
+    public void setFontSize(int size) {
+        checkAndSetFontSize(size);
     }
 
     public static void setFont(Font theFont) {
@@ -74,7 +98,7 @@ public class Text extends Renderable {
     private void recalculateVertices() {
         float height = FILE_SIZE;
         float sizeX = 0.0f;
-        float sizeY = text.length() == 0 ? 0.0f : font.getCharacterSize(text.charAt(0)).y / height;
+        float sizeY = text.length() == 0 ? 0.0f : fontSize * font.getCharacterSize(text.charAt(0)).y / height;
         for (int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
             Vector2f size = font.getCharacterSize(c);
@@ -82,8 +106,8 @@ public class Text extends Renderable {
             // Vertices
             Vector3f pos1 = modelMatrix.multiply(new Vector3f(sizeX, 0.0f, 0.0f));
             Vector3f pos2 = modelMatrix.multiply(new Vector3f(sizeX, sizeY, 0.0f));
-            Vector3f pos3 = modelMatrix.multiply(new Vector3f(sizeX + size.x / height, sizeY, 0.0f));
-            Vector3f pos4 = modelMatrix.multiply(new Vector3f(sizeX + size.x / height, 0.0f, 0.0f));
+            Vector3f pos3 = modelMatrix.multiply(new Vector3f(sizeX + fontSize * size.x / height, sizeY, 0.0f));
+            Vector3f pos4 = modelMatrix.multiply(new Vector3f(sizeX + fontSize * size.x / height, 0.0f, 0.0f));
 
             vertices[12 * i + 0] = pos1.x;
             vertices[12 * i + 1] = pos1.y;
@@ -101,22 +125,20 @@ public class Text extends Renderable {
             vertices[12 * i + 10] = pos4.y;
             vertices[12 * i + 11] = pos4.z;
 
-            sizeX += size.x / height;
+            sizeX += fontSize * size.x / height;
         }
     }
 
     private void compileSentence(String text) {
-        long start = System.nanoTime();
         int length = text.length();
         vertices = new float[4 * 3 * length];
         indices = new short[6 * length];
         colors = new float[4];
         uv = new ArrayList<>();
         texture = font.getTexture();
-        int fontSize = font.getFontSize();
         float height = FILE_SIZE;
         float sizeX = 0.0f;
-        float sizeY = text.length() == 0 ? 0.0f : font.getCharacterSize(text.charAt(0)).y / height;
+        float sizeY = text.length() == 0 ? 0.0f : fontSize * font.getCharacterSize(text.charAt(0)).y / height;
 
         short indicesOffset = 0;
         for (int i = 0; i < text.length(); i++) {
@@ -133,8 +155,8 @@ public class Text extends Renderable {
             // Vertices
             Vector3f pos1 = modelMatrix.multiply(new Vector3f(sizeX, 0.0f, 0.0f));
             Vector3f pos2 = modelMatrix.multiply(new Vector3f(sizeX, sizeY, 0.0f));
-            Vector3f pos3 = modelMatrix.multiply(new Vector3f(sizeX + size.x / height, sizeY, 0.0f));
-            Vector3f pos4 = modelMatrix.multiply(new Vector3f(sizeX + size.x / height, 0.0f, 0.0f));
+            Vector3f pos3 = modelMatrix.multiply(new Vector3f(sizeX + fontSize * size.x / height, sizeY, 0.0f));
+            Vector3f pos4 = modelMatrix.multiply(new Vector3f(sizeX + fontSize * size.x / height, 0.0f, 0.0f));
 
             vertices[12 * i + 0] = pos1.x;
             vertices[12 * i + 1] = pos1.y;
@@ -152,7 +174,7 @@ public class Text extends Renderable {
             vertices[12 * i + 10] = pos4.y;
             vertices[12 * i + 11] = pos4.z;
 
-            sizeX += size.x / height;
+            sizeX += fontSize * size.x / height;
 
             // Indices
             indices[6 * i + 0] = (short) (indicesOffset + 0);
@@ -169,8 +191,6 @@ public class Text extends Renderable {
         colors[1] = color.y;
         colors[2] = color.z;
         colors[3] = color.w;
-
-//        System.out.println("Font compilation: " + (System.nanoTime() - start) / 1000000.0f + " millis");
     }
 
     public void setText(String newText) {

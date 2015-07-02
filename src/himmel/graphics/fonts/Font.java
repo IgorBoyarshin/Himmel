@@ -17,24 +17,17 @@ import java.util.StringTokenizer;
  * Created by Igor on 02-Jun-15.
  */
 public class Font {
-    private static final int MIN_FONT_SIZE = 8;
-    private static final int MAX_FONT_SIZE = 6000;
-    private static final int DEFAULT_FONT_SIZE = 100;
-
     private Texture fontTexture;
     private Map<Character, Vector4f> parameters;
-    private int size;
 
     public Font(String fontName) {
         fontTexture = new Texture(fontName + ".png", Texture.TYPE_RGB);
         parameters = loadParameters(fontName + ".hfp");
-        checkAndSetFontSize(DEFAULT_FONT_SIZE);
     }
 
     public Font(String fontName, int size) {
         fontTexture = new Texture(fontName + ".png", Texture.TYPE_RGB);
         parameters = loadParameters(fontName + ".hfp");
-        checkAndSetFontSize(size);
     }
 
     public Texture getTexture() {
@@ -87,21 +80,5 @@ public class Font {
         }
 
         return parameters;
-    }
-
-    private void checkAndSetFontSize(int size) {
-        if (size >= MIN_FONT_SIZE && size <= MAX_FONT_SIZE) {
-            this.size = size;
-        } else {
-            this.size = DEFAULT_FONT_SIZE;
-        }
-    }
-
-    public int getFontSize() {
-        return size;
-    }
-
-    public void setFontSize(int size) {
-        checkAndSetFontSize(size);
     }
 }
