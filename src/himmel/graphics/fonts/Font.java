@@ -1,6 +1,5 @@
 package himmel.graphics.fonts;
 
-import himmel.graphics.Renderable;
 import himmel.graphics.Texture;
 import himmel.math.Vector2f;
 import himmel.math.Vector4f;
