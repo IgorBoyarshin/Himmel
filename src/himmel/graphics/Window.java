@@ -93,13 +93,29 @@ public class Window {
         glfwSwapBuffers(glfwWindow);
     }
 
-    public boolean isKeyDown(final int key) {
+    public boolean isKeyPressed(final int key) {
         if (key < 0 || key >= InputKeyboard.AMOUNT_OF_KEYS) {
             return false;
         }
 
-        return keyboard.keys[key];
+        return keyboard.keysPress[key];
     }
+
+    public boolean isKeyRepeated(final int key) {
+        if (key < 0 || key >= InputKeyboard.AMOUNT_OF_KEYS) {
+            return false;
+        }
+
+        return keyboard.keysRepeat[key];
+    }
+
+//    public boolean isKeyDown(final int key) {
+//        if (key < 0 || key >= InputKeyboard.AMOUNT_OF_KEYS) {
+//            return false;
+//        }
+//
+//        return keyboard.keys[key];
+//    }
 
     // Changed center
     public Vector2f getMousePos() {
@@ -166,9 +182,7 @@ public class Window {
 
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
-        if (!ANTI_ALIASING.equals(ANTI_ALIASING_OFF)) {
-            glEnable(GL_MULTISAMPLE);
-        }
+        glEnable(GL_MULTISAMPLE);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         clearColor(new Vector4f(0.0f, 0.0f, 0.0f, 1.0f));
