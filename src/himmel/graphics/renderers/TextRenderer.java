@@ -1,11 +1,9 @@
 package himmel.graphics.renderers;
 
-import himmel.graphics.Renderable;
+import himmel.graphics.renderables.Renderable;
 import himmel.graphics.Shader;
 import himmel.graphics.buffers.IndexBuffer;
-import himmel.graphics.fonts.Text;
 import himmel.math.Vector2f;
-import himmel.math.Vector3f;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
 package himmel.graphics.renderers;
 
-import himmel.graphics.Renderable;
+import himmel.graphics.renderables.Renderable;
 import himmel.graphics.Shader;
 import himmel.graphics.buffers.IndexBuffer;
 

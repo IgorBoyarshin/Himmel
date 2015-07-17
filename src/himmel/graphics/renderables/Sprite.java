@@ -1,7 +1,7 @@
-package himmel.graphics;
+package himmel.graphics.renderables;
 
+import himmel.graphics.*;
 import himmel.graphics.renderers.Renderer;
-import himmel.math.Matrix4f;
 import himmel.math.Vector2f;
 import himmel.math.Vector3f;
 import himmel.math.Vector4f;

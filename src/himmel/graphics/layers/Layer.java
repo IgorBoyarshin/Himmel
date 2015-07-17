@@ -1,10 +1,8 @@
 package himmel.graphics.layers;
 
-import himmel.graphics.Renderable;
+import himmel.graphics.renderables.Renderable;
 import himmel.graphics.Shader;
-import himmel.graphics.renderers.FastSpriteRenderer;
 import himmel.graphics.renderers.Renderer;
-import himmel.math.Matrix4f;
 
 import java.util.*;
 

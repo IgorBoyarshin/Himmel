@@ -1,6 +1,6 @@
 package himmel.graphics.renderers;
 
-import himmel.graphics.Renderable;
+import himmel.graphics.renderables.Renderable;
 import himmel.math.Matrix4f;
 
 import java.util.ArrayList;

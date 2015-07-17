@@ -1,6 +1,6 @@
 package himmel.graphics.groups;
 
-import himmel.graphics.Renderable;
+import himmel.graphics.renderables.Renderable;
 import himmel.graphics.renderers.Renderer;
 import himmel.math.Matrix4f;
 

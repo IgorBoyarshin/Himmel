@@ -1,6 +1,6 @@
 package himmel.graphics.fonts;
 
-import himmel.graphics.Renderable;
+import himmel.graphics.renderables.Renderable;
 import himmel.graphics.Shader;
 import himmel.graphics.renderers.Renderer;
 import himmel.graphics.renderers.TextRenderer;

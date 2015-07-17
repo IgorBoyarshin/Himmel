@@ -1,10 +1,8 @@
 package himmel.graphics.renderers;
 
-import himmel.graphics.Renderable;
+import himmel.graphics.renderables.Renderable;
 import himmel.graphics.Shader;
-import himmel.graphics.Sprite;
 import himmel.graphics.buffers.IndexBuffer;
-import himmel.math.Matrix4f;
 import himmel.math.Vector2f;
 import himmel.math.Vector3f;
 
@@ -13,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE1;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
