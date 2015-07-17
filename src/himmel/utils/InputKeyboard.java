@@ -39,14 +39,14 @@ public class InputKeyboard extends GLFWKeyCallback {
 
 //        keys[key] = action != GLFW.GLFW_RELEASE;
 
-        System.out.print("KEY " + key + " ");
-        System.out.println();
-        if (action == GLFW.GLFW_PRESS) {
-            System.out.println("press");
-        } else if (action == GLFW.GLFW_REPEAT) {
-            System.out.println("repeat");
-        } else {
-            System.out.println("up");
-        }
+//        System.out.print("KEY " + key + " ");
+//        System.out.println();
+//        if (action == GLFW.GLFW_PRESS) {
+//            System.out.println("press");
+//        } else if (action == GLFW.GLFW_REPEAT) {
+//            System.out.println("repeat");
+//        } else {
+//            System.out.println("up");
+//        }
     }
 }
