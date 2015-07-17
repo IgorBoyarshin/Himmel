@@ -36,9 +36,13 @@ public class Layer {
         } else {
             Map<Renderer, List<Renderable>> map = objects.get(shader);
             if (!map.containsKey(renderer)) { // if more than 1 renderer for a shader
-                // TODO
+                List<Renderable> renderables = new ArrayList<>();
+
+                renderables.add(renderable);
+                map.put(renderer, renderables);
             } else {
                 List<Renderable> renderables = map.get(renderer);
+
                 renderables.add(renderable);
             }
         }
