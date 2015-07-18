@@ -2,6 +2,7 @@ package himmel.graphics.buffers;
 
 import org.lwjgl.BufferUtils;
 
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
@@ -17,18 +18,57 @@ public class IndexBuffer {
     private int count;
     private final int type;
 
-    public IndexBuffer(short[] data) {
-        count = data.length;
-        type = GL_UNSIGNED_SHORT;
+    private final int BYTES_IN_SHORT = 2;
+    // TODO: determine the best multiplier. Usually it is around 3/2
+    private final int BUFFER_SIZE_BYTES = Short.MAX_VALUE * 4 * BYTES_IN_SHORT;
+    private ByteBuffer bufferData;
 
-        ShortBuffer bufferData = BufferUtils.createShortBuffer(data.length);
-        bufferData.put(data);
-        bufferData.flip();
+    private boolean filling;
+
+//    public IndexBuffer(short[] data) {
+//        count = data.length;
+//        type = GL_UNSIGNED_SHORT;
+//
+//        bufferData = BufferUtils.createShortBuffer(data.length);
+//        bufferData.put(data);
+//        bufferData.flip();
+//
+//        bufferID = glGenBuffers();
+//        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferID);
+//        glBufferData(GL_ELEMENT_ARRAY_BUFFER, bufferData, GL_STATIC_DRAW);
+//        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+//    }
+
+    public IndexBuffer() {
+        type = GL_UNSIGNED_SHORT;
+        filling = false;
 
         bufferID = glGenBuffers();
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferID);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, bufferData, GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, BUFFER_SIZE_BYTES, null, GL_DYNAMIC_DRAW);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    }
+
+    public void addShort(short index) {
+        bufferData.putShort(index);
+    }
+
+    public void begin() {
+        if (!filling) {
+            filling = true;
+
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferID);
+            bufferData = glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY);
+        }
+    }
+
+    public void end() {
+        if (filling) {
+            filling = false;
+
+            glUnmapBuffer(GL_ARRAY_BUFFER);
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+        }
     }
 
 //    public IndexBuffer(int[] data) {
@@ -54,11 +94,15 @@ public class IndexBuffer {
     }
 
     public void bind() {
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferID);
+        if (!filling) {
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferID);
+        }
     }
 
     public void unbind() {
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        if (!filling) {
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        }
     }
 
     public int getCount() {
