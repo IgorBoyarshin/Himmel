@@ -39,13 +39,13 @@ public class IndexBuffer {
 //        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 //    }
 
-    public IndexBuffer() {
+    public IndexBuffer(boolean isDynamic) {
         type = GL_UNSIGNED_SHORT;
         filling = false;
 
         bufferID = glGenBuffers();
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferID);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, BUFFER_SIZE_BYTES, null, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, BUFFER_SIZE_BYTES, null, isDynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 

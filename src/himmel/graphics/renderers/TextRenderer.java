@@ -70,7 +70,7 @@ public class TextRenderer extends Renderer {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 //        short[] indices = new short[MAX_INDICES];
-        ibo = new IndexBuffer();
+        ibo = new IndexBuffer(false);
 
         ibo.begin();
 

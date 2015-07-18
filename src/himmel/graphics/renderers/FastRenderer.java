@@ -52,7 +52,7 @@ public class FastRenderer extends Renderer {
     private void init() {
         vao = glGenVertexArrays();
         vbo = glGenBuffers();
-        ibo = new IndexBuffer();
+        ibo = new IndexBuffer(true);
 
         glBindVertexArray(vao);
         glBindBuffer(GL_ARRAY_BUFFER, vbo);

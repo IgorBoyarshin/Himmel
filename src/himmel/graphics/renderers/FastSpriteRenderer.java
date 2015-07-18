@@ -76,7 +76,7 @@ public class FastSpriteRenderer extends Renderer {
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        ibo = new IndexBuffer();
+        ibo = new IndexBuffer(false);
         ibo.begin();
 
 //        short[] indices = new short[MAX_INDICES];
