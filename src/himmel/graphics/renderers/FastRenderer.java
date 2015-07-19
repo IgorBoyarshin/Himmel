@@ -91,8 +91,8 @@ public class FastRenderer extends Renderer {
 
             // Indices
             short[] indices = renderable.getIndices();
-            for (int i = 0; i < indices.length; i++) {
-                ibo.addShort((short) (indices[i] + currentVerticesAmount));
+            for (short index : indices) {
+                ibo.addShort((short) (index + currentVerticesAmount));
             }
 
             currentVerticesAmount += vertices.length / 3;
