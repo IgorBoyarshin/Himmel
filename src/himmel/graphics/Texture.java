@@ -18,18 +18,21 @@ public class Texture {
 
     public static final int TYPE_RGB = 0;
     public static final int TYPE_RGBA = 1;
-    private final int TYPE;
 
-    public Texture(String path, final int type) {
-        TYPE = type;
+    public static final int FILTER_NEAREST = 0;
+    public static final int FILTER_LINEAR = 1;
+//    private final int TYPE;
 
-        textureID = loadTexture(path);
+    public Texture(String path, final int type, final int minFilter, final int magFilter) {
+//        TYPE = type;
+
+        textureID = loadTexture(path, type, minFilter, magFilter);
 //        this.TYPE = TYPE_RGB;
     }
 
-    public final int getType() {
-        return TYPE;
-    }
+//    public final int getType() {
+//        return TYPE;
+//    }
 
     public void bind() {
         glBindTexture(GL_TEXTURE_2D, textureID);
@@ -43,7 +46,7 @@ public class Texture {
         return textureID;
     }
 
-    private int loadTexture(String path) {
+    private int loadTexture(String path, int type, int minFilter, int magFilter) {
         BufferedImage i = null;
         try {
             i = ImageIO.read(new File(path));
@@ -52,7 +55,7 @@ public class Texture {
         }
         byte[] data = ((DataBufferByte) i.getRaster().getDataBuffer()).getData();
 
-        if (TYPE == TYPE_RGB) {
+        if (type == TYPE_RGB) {
             for (int j = 0; j < data.length; j += 3) {
                 byte temp = data[j];
                 data[j] = data[j + 2];
@@ -78,12 +81,12 @@ public class Texture {
         glBindTexture(GL_TEXTURE_2D, id);
 //        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 //        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter == FILTER_LINEAR ? GL_LINEAR : GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, minFilter == FILTER_LINEAR ? GL_LINEAR : GL_NEAREST);
 
 //        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, i.getWidth(), i.getHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, imageBuffer);
-        glTexImage2D(GL_TEXTURE_2D, 0, TYPE == TYPE_RGB ? GL_RGB : GL_RGBA,
-                i.getWidth(), i.getHeight(), 0, TYPE == TYPE_RGB ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, imageBuffer);
+        glTexImage2D(GL_TEXTURE_2D, 0, type == TYPE_RGB ? GL_RGB : GL_RGBA,
+                i.getWidth(), i.getHeight(), 0, type == TYPE_RGB ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, imageBuffer);
 //        if (TYPE == TYPE_RGB) {
 //            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, i.getWidth(), i.getHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, imageBuffer);
 //        } else {
