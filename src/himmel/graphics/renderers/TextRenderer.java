@@ -69,22 +69,35 @@ public class TextRenderer extends Renderer {
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        short[] indices = new short[MAX_INDICES];
+//        short[] indices = new short[MAX_INDICES];
+        ibo = new IndexBuffer(false);
+
+        ibo.begin();
 
         short offset = 0;
         for (int i = 0; i < MAX_INDICES; i += 6) {
-            indices[i] = (short) (offset + 0);
-            indices[i + 1] = (short) (offset + 1);
-            indices[i + 2] = (short) (offset + 2);
+            ibo.addShort((short) (offset + 0));
+            ibo.addShort((short) (offset + 1));
+            ibo.addShort((short) (offset + 2));
 
-            indices[i + 3] = (short) (offset + 0);
-            indices[i + 4] = (short) (offset + 2);
-            indices[i + 5] = (short) (offset + 3);
+            ibo.addShort((short) (offset + 0));
+            ibo.addShort((short) (offset + 2));
+            ibo.addShort((short) (offset + 3));
+
+//            indices[i] = (short) (offset + 0);
+//            indices[i + 1] = (short) (offset + 1);
+//            indices[i + 2] = (short) (offset + 2);
+//
+//            indices[i + 3] = (short) (offset + 0);
+//            indices[i + 4] = (short) (offset + 2);
+//            indices[i + 5] = (short) (offset + 3);
 
             offset += 4;
         }
 
-        ibo = new IndexBuffer(indices);
+        ibo.end();
+
+//        ibo = new IndexBuffer(indices);
 
         glBindVertexArray(0);
     }
