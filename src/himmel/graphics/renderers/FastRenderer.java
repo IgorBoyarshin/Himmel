@@ -3,6 +3,8 @@ package himmel.graphics.renderers;
 import himmel.graphics.renderables.Renderable;
 import himmel.graphics.Shader;
 import himmel.graphics.buffers.IndexBuffer;
+import himmel.math.Vector2f;
+import himmel.math.Vector3f;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -34,7 +36,7 @@ public class FastRenderer extends Renderer {
 
     private int currentVerticesAmount;
     private int currentIndicesAmount;
-//    private int currentIndexUsed;
+//    private short currentIndexUsed;
 
     private boolean filling;
 
@@ -74,7 +76,68 @@ public class FastRenderer extends Renderer {
 
     @Override
     public void submit(Renderable renderable) {
+        if (filling) {
+            float[] vertices = renderable.getVertices();
+            float[] colors = renderable.getColors();
+            List<Vector2f> uv = renderable.getUV();
+            int tid = renderable.getTID();
 
+            // Indices
+//            final short offset = (short) currentIndexUsed;
+            short[] indices = renderable.getIndices();
+            for (int i = 0; i < indices.length; i++) {
+                ibo.addShort((short) (indices[i] + currentVerticesAmount));
+            }
+
+            currentVerticesAmount += vertices.length / 3;
+            currentIndicesAmount += indices.length;
+
+            float ts = 0.0f;
+            if (tid > 0) {
+                boolean found = false;
+                for (int i = 0; i < textureSlots.size(); i++) {
+                    if (textureSlots.get(i) == tid) {
+                        ts = (float) (i + 1);
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found) {
+                    if (textureSlots.size() >= 16) {
+                        end();
+                        render();
+                        begin();
+                    }
+                    textureSlots.add(tid);
+                    ts = (float) textureSlots.size();
+//                    System.out.println("t:" + tid + " " + ts);
+                }
+            } else {
+                // render with colors
+            }
+
+            List<Vector3f> transformedVertices = new ArrayList<>();
+            for (int i = 0; i < vertices.length / 3; i++) {
+                transformedVertices.add(transformationStackCash.multiply(new Vector3f(vertices[3 * i + 0], vertices[3 * i + 1], vertices[3 * i + 2])));
+//                transformedVertices.add(new Vector3f(vertices[3 * i + 0], vertices[3 * i + 1], vertices[3 * i + 2]));
+            }
+
+            for (int i = 0; i < vertices.length / 3; i++) {
+                Vector3f vertex = transformedVertices.get(i);
+
+                gpuBuffer.putFloat(vertex.x);
+                gpuBuffer.putFloat(vertex.y);
+                gpuBuffer.putFloat(vertex.z);
+                gpuBuffer.putFloat(uv.get(i).x);
+                gpuBuffer.putFloat(uv.get(i).y);
+                gpuBuffer.putFloat(tid);
+                gpuBuffer.putFloat(colors[4 * i + 0]);
+                gpuBuffer.putFloat(colors[4 * i + 1]);
+                gpuBuffer.putFloat(colors[4 * i + 2]);
+                gpuBuffer.putFloat(colors[4 * i + 3]);
+            }
+        }
     }
 
     @Override
@@ -88,7 +151,7 @@ public class FastRenderer extends Renderer {
             glBindVertexArray(vao);
             ibo.bind();
 
-//            glDrawElements(GL_TRIANGLES, currentIndicesCount, GL_UNSIGNED_SHORT, 0);
+            glDrawElements(GL_TRIANGLES, currentIndicesAmount, GL_UNSIGNED_SHORT, 0);
 
             ibo.unbind();
             glBindVertexArray(0);
@@ -109,7 +172,9 @@ public class FastRenderer extends Renderer {
             gpuBuffer = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
 
             ibo.begin();
-//            System.out.println("Capacity " + gpuBuffer.capacity());
+
+            currentVerticesAmount = 0;
+            currentIndicesAmount = 0;
         }
     }
 
@@ -122,6 +187,13 @@ public class FastRenderer extends Renderer {
             glBindBuffer(GL_ARRAY_BUFFER, 0);
 
             ibo.end();
+
+            System.out.println();
+            System.out.println("Capacity: " + gpuBuffer.capacity());
+            System.out.println("Limit: " + gpuBuffer.position());
+            System.out.println("Vertices: " + currentVerticesAmount);
+            System.out.println("Indices: " + currentIndicesAmount);
+            System.out.println();
         }
     }
 }
