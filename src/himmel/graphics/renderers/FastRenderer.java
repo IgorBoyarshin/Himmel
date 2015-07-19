@@ -82,8 +82,14 @@ public class FastRenderer extends Renderer {
             List<Vector2f> uv = renderable.getUV();
             int tid = renderable.getTID();
 
+            if (currentVerticesAmount + vertices.length / 3 >= MAX_VERTICES) {
+                // flush
+                end();
+                render();
+                begin();
+            }
+
             // Indices
-//            final short offset = (short) currentIndexUsed;
             short[] indices = renderable.getIndices();
             for (int i = 0; i < indices.length; i++) {
                 ibo.addShort((short) (indices[i] + currentVerticesAmount));
@@ -188,12 +194,12 @@ public class FastRenderer extends Renderer {
 
             ibo.end();
 
-            System.out.println();
-            System.out.println("Capacity: " + gpuBuffer.capacity());
-            System.out.println("Limit: " + gpuBuffer.position());
-            System.out.println("Vertices: " + currentVerticesAmount);
-            System.out.println("Indices: " + currentIndicesAmount);
-            System.out.println();
+//            System.out.println();
+//            System.out.println("Capacity: " + gpuBuffer.capacity());
+//            System.out.println("Limit: " + gpuBuffer.position());
+//            System.out.println("Vertices: " + currentVerticesAmount);
+//            System.out.println("Indices: " + currentIndicesAmount);
+//            System.out.println();
         }
     }
 }
