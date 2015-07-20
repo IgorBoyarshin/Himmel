@@ -22,6 +22,22 @@ public class Camera {
         this.yaw = yaw;
     }
 
+    // TODO
+    // Parameter: Object
+    public void attachTo() {
+
+    }
+
+    // TODO
+    public void move(Vector3f direction, float length) {
+
+    }
+
+    // TODO
+    public Vector3f getDirection() {
+        return null;
+    }
+
 
     public void setYaw(float yaw) {
         this.yaw = yaw;
@@ -43,7 +59,7 @@ public class Camera {
         this.cameraPosition = position;
     }
 
-    public void move(Vector3f shift) {
+    public void shift(Vector3f shift) {
         this.cameraPosition.x += shift.x;
         this.cameraPosition.y += shift.y;
         this.cameraPosition.z += shift.z;
