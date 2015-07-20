@@ -137,7 +137,7 @@ public class FastRenderer extends Renderer {
                 gpuBuffer.putFloat(vertex.z);
                 gpuBuffer.putFloat(uv.get(i).x);
                 gpuBuffer.putFloat(uv.get(i).y);
-                gpuBuffer.putFloat(tid);
+                gpuBuffer.putFloat(ts);
                 gpuBuffer.putFloat(colors[4 * i + 0]);
                 gpuBuffer.putFloat(colors[4 * i + 1]);
                 gpuBuffer.putFloat(colors[4 * i + 2]);
