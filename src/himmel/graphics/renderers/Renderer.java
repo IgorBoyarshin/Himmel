@@ -15,11 +15,7 @@ public abstract class Renderer {
 
     protected boolean filling = false;
 
-    protected List<ShaderComponent> shaderComponents;
-
-    public Renderer(List<ShaderComponent> shaderComponents) {
-        this.shaderComponents = shaderComponents;
-
+    public Renderer() {
         transformationStack = new ArrayList<>();
         transformationStack.add(Matrix4f.identity());
         transformationStackCash = transformationStack.get(0);
