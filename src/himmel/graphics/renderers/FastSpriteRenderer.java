@@ -31,29 +31,34 @@ public class FastSpriteRenderer extends Renderer {
     private ByteBuffer gpuBuffer;
     private List<Integer> textureSlots;
 
-//    private final int COMPONENT_SIZE = (3 * 4 + 3 * 4 + 2 * 4 + 1 * 4 + 4 * 4);
-    private final int COMPONENT_SIZE;
-//    private final int SPRITE_SIZE = COMPONENT_SIZE * 4;
-    private final int SPRITE_SIZE;
+    private final int SHADER_ATTR_VERTEX = 0;
+    private final int SHADER_ATTR_COLOR = 1;
+    private final int SHADER_ATTR_UV = 2;
+    private final int SHADER_ATTR_TID = 3;
+
+    private final int FLOAT_SIZE_BYTES = 4;
+
+    private final int VERTEX_FLOATS_PER_COMPONENT = 3;
+    private final int UV_FLOATS_PER_COMPONENT = 2;
+    private final int TID_FLOATS_PER_COMPONENT = 1;
+    private final int COLOR_FLOATS_PER_COMPONENT = 4;
+
+    private final int COMPONENT_SIZE = FLOAT_SIZE_BYTES *
+            (VERTEX_FLOATS_PER_COMPONENT +
+                    UV_FLOATS_PER_COMPONENT +
+                    TID_FLOATS_PER_COMPONENT +
+                    COLOR_FLOATS_PER_COMPONENT);
+    private final int SPRITE_SIZE = COMPONENT_SIZE * 4;
     private final int MAX_INDICES = 32000 / 4 * 6;
-//    private final int BUFFER_SIZE = SPRITE_SIZE * MAX_INDICES / 6;
-    private final int BUFFER_SIZE;
+    private final int BUFFER_SIZE = SPRITE_SIZE * MAX_INDICES / 6;
 
     private int currentIndicesCount = 0;
     private int currentSpriteCount = 0;
 
-    public FastSpriteRenderer(List<ShaderComponent> shaderComponents) {
-        super(shaderComponents);
+    public FastSpriteRenderer() {
+        super();
 
-        int componentSizeBytes = 0;
-        for (ShaderComponent component : shaderComponents) {
-            componentSizeBytes += component.getAmount() * component.getType().getBytes();
-        }
-        this.COMPONENT_SIZE = componentSizeBytes;
-        this.SPRITE_SIZE = COMPONENT_SIZE * 4;
-        this.BUFFER_SIZE = SPRITE_SIZE * MAX_INDICES / 6;
-
-        init(shaderComponents);
+        init();
         textureSlots = new ArrayList<>();
     }
 
@@ -61,7 +66,7 @@ public class FastSpriteRenderer extends Renderer {
         glDeleteBuffers(vbo);
     }
 
-    private void init(List<ShaderComponent> shaderComponents) {
+    private void init() {
         vao = glGenVertexArrays();
         vbo = glGenBuffers();
 
@@ -69,31 +74,20 @@ public class FastSpriteRenderer extends Renderer {
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBufferData(GL_ARRAY_BUFFER, BUFFER_SIZE, null, GL_DYNAMIC_DRAW);
 
-        // TODO: add support for other component's types
-        int offsetForComponent = 0;
-        for (ShaderComponent component : shaderComponents) {
-            glEnableVertexAttribArray(component.getLocation());
-            glVertexAttribPointer(component.getLocation(), component.getAmount(),
-                    component.getType().equals(ShaderComponent.TYPE.FLOAT) ? GL_FLOAT : GL_FLOAT, false, COMPONENT_SIZE, offsetForComponent);
-            offsetForComponent += component.getAmount() * component.getType().getBytes();
-        }
+        glEnableVertexAttribArray(SHADER_ATTR_VERTEX);
+        glEnableVertexAttribArray(SHADER_ATTR_COLOR);
+        glEnableVertexAttribArray(SHADER_ATTR_UV);
+        glEnableVertexAttribArray(SHADER_ATTR_TID);
 
-//        glEnableVertexAttribArray(Shader.ATTR_VERTEX);
-//        glEnableVertexAttribArray(Shader.ATTR_UV);
-//        glEnableVertexAttribArray(Shader.ATTR_TID);
-//        glEnableVertexAttribArray(Shader.ATTR_COLOR);
-//
-//        glVertexAttribPointer(Shader.ATTR_VERTEX, 3, GL_FLOAT, false, COMPONENT_SIZE, 0);
-//        glVertexAttribPointer(Shader.ATTR_UV, 2, GL_FLOAT, false, COMPONENT_SIZE, 12);
-//        glVertexAttribPointer(Shader.ATTR_TID, 1, GL_FLOAT, false, COMPONENT_SIZE, 12 + 8);
-//        glVertexAttribPointer(Shader.ATTR_COLOR, 4, GL_FLOAT, false, COMPONENT_SIZE, 12 + 8 + 4);
+        glVertexAttribPointer(SHADER_ATTR_VERTEX, 3, GL_FLOAT, false, COMPONENT_SIZE, 0);
+        glVertexAttribPointer(SHADER_ATTR_COLOR, 4, GL_FLOAT, false, COMPONENT_SIZE, 12);
+        glVertexAttribPointer(SHADER_ATTR_UV, 2, GL_FLOAT, false, COMPONENT_SIZE, 12 + 16);
+        glVertexAttribPointer(SHADER_ATTR_TID, 1, GL_FLOAT, false, COMPONENT_SIZE, 12 + 16 + 8);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         ibo = new IndexBuffer(false);
         ibo.begin();
-
-//        short[] indices = new short[MAX_INDICES];
 
         short offset = 0;
         for (int i = 0; i < MAX_INDICES; i += 6) {
@@ -105,139 +99,108 @@ public class FastSpriteRenderer extends Renderer {
             ibo.addShort((short) (offset + 2));
             ibo.addShort((short) (offset + 3));
 
-//            indices[i] = (short) (offset + 0);
-//            indices[i + 1] = (short) (offset + 1);
-//            indices[i + 2] = (short) (offset + 2);
-//
-//            indices[i + 3] = (short) (offset + 0);
-//            indices[i + 4] = (short) (offset + 2);
-//            indices[i + 5] = (short) (offset + 3);
-
             offset += 4;
         }
         ibo.end();
-
-//        ibo = new IndexBuffer(indices);
 
         glBindVertexArray(0);
     }
 
     @Override
     public void submit(Renderable renderable) {
-//        if (filling) {
-//            if (currentSpriteCount > 7998) {
-//                end();
-//                render();
-//                begin();
-//
-//                currentIndicesCount = 0;
-//                currentSpriteCount = 0;
-//            }
-//
-//            currentIndicesCount += 6;
-//            currentSpriteCount++;
-//
-//
-//            float[] vertices = renderable.getVertices();
-//            float[] colors = renderable.getColors();
-//            List<Vector2f> uv = renderable.getUV();
-//            int tid = renderable.getTID();
-//
-//            float ts = 0.0f;
-//            if (tid > 0) {
-//                boolean found = false;
-//                for (int i = 0; i < textureSlots.size(); i++) {
-//                    if (textureSlots.get(i) == tid) {
-//                        ts = (float) (i + 1);
-//                        found = true;
-//                        break;
-//                    }
-//                }
-//
-//                if (!found) {
-//                    if (textureSlots.size() >= 32) {
-//                        end();
-//                        render();
-//                        begin();
-//                    }
-//                    textureSlots.add(tid);
-//                    ts = (float) textureSlots.size();
-////                    System.out.println("t:" + tid + " " + ts);
-//                }
-//            } else {
-//                // render with colors
-//            }
-//
-////            System.out.println();
-////            transformationStackCash.print();
-////            System.out.println();
-//            Vector3f v1 = transformationStackCash.multiply(new Vector3f(vertices[3 * 0 + 0], vertices[3 * 0 + 1], vertices[3 * 0 + 2]));
-//            Vector3f v2 = transformationStackCash.multiply(new Vector3f(vertices[3 * 1 + 0], vertices[3 * 1 + 1], vertices[3 * 1 + 2]));
-//            Vector3f v3 = transformationStackCash.multiply(new Vector3f(vertices[3 * 2 + 0], vertices[3 * 2 + 1], vertices[3 * 2 + 2]));
-//            Vector3f v4 = transformationStackCash.multiply(new Vector3f(vertices[3 * 3 + 0], vertices[3 * 3 + 1], vertices[3 * 3 + 2]));
-////            System.out.println(v1.x);
-////            System.out.println(v1.y);
-////            System.out.println(v1.z);
-//
-////            System.out.println("Limit " + gpuBuffer.limit());
-////            System.out.println("Pos  " + gpuBuffer.position());
-//
-////            gpuBuffer.putFloat(vertices[3 * 0 + 0]);
-////            gpuBuffer.putFloat(vertices[3 * 0 + 1]);
-////            gpuBuffer.putFloat(vertices[3 * 0 + 2]);
-//            gpuBuffer.putFloat(v1.x);
-//            gpuBuffer.putFloat(v1.y);
-//            gpuBuffer.putFloat(v1.z);
-//            gpuBuffer.putFloat(uv.get(0).x);
-//            gpuBuffer.putFloat(uv.get(0).y);
-//            gpuBuffer.putFloat(ts);
-//            gpuBuffer.putFloat(colors[4 * 0 + 0]);
-//            gpuBuffer.putFloat(colors[4 * 0 + 1]);
-//            gpuBuffer.putFloat(colors[4 * 0 + 2]);
-//            gpuBuffer.putFloat(colors[4 * 0 + 3]);
-//
-////            gpuBuffer.putFloat(vertices[3 * 1 + 0]);
-////            gpuBuffer.putFloat(vertices[3 * 1 + 1]);
-////            gpuBuffer.putFloat(vertices[3 * 1 + 2]);
-//            gpuBuffer.putFloat(v2.x);
-//            gpuBuffer.putFloat(v2.y);
-//            gpuBuffer.putFloat(v2.z);
-//            gpuBuffer.putFloat(uv.get(1).x);
-//            gpuBuffer.putFloat(uv.get(1).y);
-//            gpuBuffer.putFloat(ts);
-//            gpuBuffer.putFloat(colors[4 * 1 + 0]);
-//            gpuBuffer.putFloat(colors[4 * 1 + 1]);
-//            gpuBuffer.putFloat(colors[4 * 1 + 2]);
-//            gpuBuffer.putFloat(colors[4 * 1 + 3]);
-//
-////            gpuBuffer.putFloat(vertices[3 * 2 + 0]);
-////            gpuBuffer.putFloat(vertices[3 * 2 + 1]);
-////            gpuBuffer.putFloat(vertices[3 * 2 + 2]);
-//            gpuBuffer.putFloat(v3.x);
-//            gpuBuffer.putFloat(v3.y);
-//            gpuBuffer.putFloat(v3.z);
-//            gpuBuffer.putFloat(uv.get(2).x);
-//            gpuBuffer.putFloat(uv.get(2).y);
-//            gpuBuffer.putFloat(ts);
-//            gpuBuffer.putFloat(colors[4 * 2 + 0]);
-//            gpuBuffer.putFloat(colors[4 * 2 + 1]);
-//            gpuBuffer.putFloat(colors[4 * 2 + 2]);
-//            gpuBuffer.putFloat(colors[4 * 2 + 3]);
-//
-////            gpuBuffer.putFloat(vertices[3 * 3 + 0]);
-////            gpuBuffer.putFloat(vertices[3 * 3 + 1]);
-////            gpuBuffer.putFloat(vertices[3 * 3 + 2]);
-//            gpuBuffer.putFloat(v4.x);
-//            gpuBuffer.putFloat(v4.y);
-//            gpuBuffer.putFloat(v4.z);
-//            gpuBuffer.putFloat(uv.get(3).x);
-//            gpuBuffer.putFloat(uv.get(3).y);
-//            gpuBuffer.putFloat(ts);
-//            gpuBuffer.putFloat(colors[4 * 3 + 0]);
-//            gpuBuffer.putFloat(colors[4 * 3 + 1]);
-//            gpuBuffer.putFloat(colors[4 * 3 + 2]);
-//            gpuBuffer.putFloat(colors[4 * 3 + 3]);
-//        }
+        if (filling) {
+            if (currentSpriteCount > 7998) {
+                end();
+                render();
+                begin();
+
+                currentIndicesCount = 0;
+                currentSpriteCount = 0;
+            }
+
+            currentIndicesCount += 6;
+            currentSpriteCount++;
+
+
+            float[] vertices = renderable.getVertices();
+            float[] colors = renderable.getColors();
+            float[] uv = renderable.getUV();
+            int tid = renderable.getTID();
+
+            float ts = 0.0f;
+            if (tid > 0) {
+                boolean found = false;
+                for (int i = 0; i < textureSlots.size(); i++) {
+                    if (textureSlots.get(i) == tid) {
+                        ts = (float) (i + 1);
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found) {
+                    if (textureSlots.size() >= 32) {
+                        end();
+                        render();
+                        begin();
+                    }
+                    textureSlots.add(tid);
+                    ts = (float) textureSlots.size();
+//                    System.out.println("t:" + tid + " " + ts);
+                }
+            } else {
+                // render with colors
+            }
+
+            Vector3f v1 = transformationStackCash.multiply(new Vector3f(vertices[3 * 0 + 0], vertices[3 * 0 + 1], vertices[3 * 0 + 2]));
+            Vector3f v2 = transformationStackCash.multiply(new Vector3f(vertices[3 * 1 + 0], vertices[3 * 1 + 1], vertices[3 * 1 + 2]));
+            Vector3f v3 = transformationStackCash.multiply(new Vector3f(vertices[3 * 2 + 0], vertices[3 * 2 + 1], vertices[3 * 2 + 2]));
+            Vector3f v4 = transformationStackCash.multiply(new Vector3f(vertices[3 * 3 + 0], vertices[3 * 3 + 1], vertices[3 * 3 + 2]));
+
+            gpuBuffer.putFloat(v1.x);
+            gpuBuffer.putFloat(v1.y);
+            gpuBuffer.putFloat(v1.z);
+            gpuBuffer.putFloat(uv[2 * 0]);
+            gpuBuffer.putFloat(uv[2 * 0 + 1]);
+            gpuBuffer.putFloat(ts);
+            gpuBuffer.putFloat(colors[4 * 0 + 0]);
+            gpuBuffer.putFloat(colors[4 * 0 + 1]);
+            gpuBuffer.putFloat(colors[4 * 0 + 2]);
+            gpuBuffer.putFloat(colors[4 * 0 + 3]);
+
+            gpuBuffer.putFloat(v2.x);
+            gpuBuffer.putFloat(v2.y);
+            gpuBuffer.putFloat(v2.z);
+            gpuBuffer.putFloat(uv[2 * 1]);
+            gpuBuffer.putFloat(uv[2 * 1]);
+            gpuBuffer.putFloat(ts);
+            gpuBuffer.putFloat(colors[4 * 1 + 0]);
+            gpuBuffer.putFloat(colors[4 * 1 + 1]);
+            gpuBuffer.putFloat(colors[4 * 1 + 2]);
+            gpuBuffer.putFloat(colors[4 * 1 + 3]);
+
+            gpuBuffer.putFloat(v3.x);
+            gpuBuffer.putFloat(v3.y);
+            gpuBuffer.putFloat(v3.z);
+            gpuBuffer.putFloat(uv[2 * 2]);
+            gpuBuffer.putFloat(uv[2 * 2]);
+            gpuBuffer.putFloat(ts);
+            gpuBuffer.putFloat(colors[4 * 2 + 0]);
+            gpuBuffer.putFloat(colors[4 * 2 + 1]);
+            gpuBuffer.putFloat(colors[4 * 2 + 2]);
+            gpuBuffer.putFloat(colors[4 * 2 + 3]);
+
+            gpuBuffer.putFloat(v4.x);
+            gpuBuffer.putFloat(v4.y);
+            gpuBuffer.putFloat(v4.z);
+            gpuBuffer.putFloat(uv[2 * 3]);
+            gpuBuffer.putFloat(uv[2 * 3]);
+            gpuBuffer.putFloat(ts);
+            gpuBuffer.putFloat(colors[4 * 3 + 0]);
+            gpuBuffer.putFloat(colors[4 * 3 + 1]);
+            gpuBuffer.putFloat(colors[4 * 3 + 2]);
+            gpuBuffer.putFloat(colors[4 * 3 + 3]);
+        }
     }
 
     @Override
