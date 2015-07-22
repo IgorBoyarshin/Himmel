@@ -34,12 +34,11 @@ public class Text extends Renderable {
 
     private static Font font;
     //    private static Font font = new Font("src//himmel//resources//FontCalibri");
-    // TODO:
-    private static Renderer textRenderer = new TextRenderer(null);
+    private static Renderer textRenderer = new TextRenderer();
     private static Shader shader;
 
     public Text(String text, Vector4f mainColor) {
-        super(null, null, textRenderer, shader);
+        super(null, null, null, textRenderer, shader);
         this.text = text;
         this.color = mainColor;
         modelMatrix = Matrix4f.identity();
@@ -48,7 +47,7 @@ public class Text extends Renderable {
     }
 
     public Text(String text, int fontSize, Vector4f mainColor) {
-        super(null, null, textRenderer, shader);
+        super(null, null, null, textRenderer, shader);
         this.text = text;
         this.color = mainColor;
         modelMatrix = Matrix4f.identity();
@@ -57,7 +56,7 @@ public class Text extends Renderable {
     }
 
     public Text(String text, Vector4f color, int fontSize, Shader shader) {
-        super(null, null, textRenderer, shader);
+        super(null, null, null, textRenderer, shader);
         this.text = text;
         this.color = color;
         modelMatrix = Matrix4f.identity();
@@ -66,7 +65,7 @@ public class Text extends Renderable {
     }
 
     public Text(String text, int fontSize, Shader shader) {
-        super(null, null, textRenderer, shader);
+        super(null, null, null, textRenderer, shader);
 //        font = new Font("src//himmel//resources//FontCalibri");
         this.text = text;
         color = new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
@@ -103,101 +102,105 @@ public class Text extends Renderable {
     }
 
     private void recalculateVertices() {
-//        float height = FILE_SIZE;
-//        float sizeX = 0.0f;
-//        float sizeY = text.length() == 0 ? 0.0f : fontSize * font.getCharacterSize(text.charAt(0)).y / height;
-//        for (int i = 0; i < text.length(); i++) {
-//            char c = text.charAt(i);
-//            Vector2f size = font.getCharacterSize(c);
-//
-//            // Vertices
-//            Vector3f pos1 = modelMatrix.multiply(new Vector3f(sizeX, 0.0f, 0.0f));
-//            Vector3f pos2 = modelMatrix.multiply(new Vector3f(sizeX, sizeY, 0.0f));
-//            Vector3f pos3 = modelMatrix.multiply(new Vector3f(sizeX + fontSize * size.x / height, sizeY, 0.0f));
-//            Vector3f pos4 = modelMatrix.multiply(new Vector3f(sizeX + fontSize * size.x / height, 0.0f, 0.0f));
-//
-//            vertices[12 * i + 0] = pos1.x;
-//            vertices[12 * i + 1] = pos1.y;
-//            vertices[12 * i + 2] = pos1.z;
-//
-//            vertices[12 * i + 3] = pos2.x;
-//            vertices[12 * i + 4] = pos2.y;
-//            vertices[12 * i + 5] = pos2.z;
-//
-//            vertices[12 * i + 6] = pos3.x;
-//            vertices[12 * i + 7] = pos3.y;
-//            vertices[12 * i + 8] = pos3.z;
-//
-//            vertices[12 * i + 9] = pos4.x;
-//            vertices[12 * i + 10] = pos4.y;
-//            vertices[12 * i + 11] = pos4.z;
-//
-//            sizeX += fontSize * size.x / height;
-//        }
+        float height = FILE_SIZE;
+        float sizeX = 0.0f;
+        float sizeY = text.length() == 0 ? 0.0f : fontSize * font.getCharacterSize(text.charAt(0)).y / height;
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            Vector2f size = font.getCharacterSize(c);
+
+            // Vertices
+            Vector3f pos1 = modelMatrix.multiply(new Vector3f(sizeX, 0.0f, 0.0f));
+            Vector3f pos2 = modelMatrix.multiply(new Vector3f(sizeX, sizeY, 0.0f));
+            Vector3f pos3 = modelMatrix.multiply(new Vector3f(sizeX + fontSize * size.x / height, sizeY, 0.0f));
+            Vector3f pos4 = modelMatrix.multiply(new Vector3f(sizeX + fontSize * size.x / height, 0.0f, 0.0f));
+
+            vertices[12 * i + 0] = pos1.x;
+            vertices[12 * i + 1] = pos1.y;
+            vertices[12 * i + 2] = pos1.z;
+
+            vertices[12 * i + 3] = pos2.x;
+            vertices[12 * i + 4] = pos2.y;
+            vertices[12 * i + 5] = pos2.z;
+
+            vertices[12 * i + 6] = pos3.x;
+            vertices[12 * i + 7] = pos3.y;
+            vertices[12 * i + 8] = pos3.z;
+
+            vertices[12 * i + 9] = pos4.x;
+            vertices[12 * i + 10] = pos4.y;
+            vertices[12 * i + 11] = pos4.z;
+
+            sizeX += fontSize * size.x / height;
+        }
     }
 
     private void compileSentence(String text) {
-//        int length = text.length();
-//        vertices = new float[4 * 3 * length];
-//        indices = new short[6 * length];
-//        colors = new float[4];
-//        uv = new ArrayList<>();
-//        texture = font.getTexture();
-//        float height = FILE_SIZE;
-//        float sizeX = 0.0f;
-//        float sizeY = text.length() == 0 ? 0.0f : fontSize * font.getCharacterSize(text.charAt(0)).y / height;
-//
-//        short indicesOffset = 0;
-//        for (int i = 0; i < text.length(); i++) {
-//            char c = text.charAt(i);
-//            Vector4f parameter = font.getCharacterParameter(c);
-//            Vector2f size = font.getCharacterSize(c);
-//
-//            // UV
-//            uv.add(new Vector2f(parameter.x / height, parameter.w / height));
-//            uv.add(new Vector2f(parameter.x / height, parameter.y / height));
-//            uv.add(new Vector2f(parameter.z / height, parameter.y / height));
-//            uv.add(new Vector2f(parameter.z / height, parameter.w / height));
-//
-//            // Vertices
-//            Vector3f pos1 = modelMatrix.multiply(new Vector3f(sizeX, 0.0f, 0.0f));
-//            Vector3f pos2 = modelMatrix.multiply(new Vector3f(sizeX, sizeY, 0.0f));
-//            Vector3f pos3 = modelMatrix.multiply(new Vector3f(sizeX + fontSize * size.x / height, sizeY, 0.0f));
-//            Vector3f pos4 = modelMatrix.multiply(new Vector3f(sizeX + fontSize * size.x / height, 0.0f, 0.0f));
-//
-//            vertices[12 * i + 0] = pos1.x;
-//            vertices[12 * i + 1] = pos1.y;
-//            vertices[12 * i + 2] = pos1.z;
-//
-//            vertices[12 * i + 3] = pos2.x;
-//            vertices[12 * i + 4] = pos2.y;
-//            vertices[12 * i + 5] = pos2.z;
-//
-//            vertices[12 * i + 6] = pos3.x;
-//            vertices[12 * i + 7] = pos3.y;
-//            vertices[12 * i + 8] = pos3.z;
-//
-//            vertices[12 * i + 9] = pos4.x;
-//            vertices[12 * i + 10] = pos4.y;
-//            vertices[12 * i + 11] = pos4.z;
-//
-//            sizeX += fontSize * size.x / height;
-//
-//            // Indices
-//            indices[6 * i + 0] = (short) (indicesOffset + 0);
-//            indices[6 * i + 1] = (short) (indicesOffset + 1);
-//            indices[6 * i + 2] = (short) (indicesOffset + 2);
-//            indices[6 * i + 3] = (short) (indicesOffset + 0);
-//            indices[6 * i + 4] = (short) (indicesOffset + 2);
-//            indices[6 * i + 5] = (short) (indicesOffset + 3);
-//
-//            indicesOffset += 4;
-//        }
-//
-//        colors[0] = color.x;
-//        colors[1] = color.y;
-//        colors[2] = color.z;
-//        colors[3] = color.w;
+        int length = text.length();
+        vertices = new float[4 * 3 * length];
+        indices = new short[6 * length];
+        colors = new float[4];
+        uv = new float[4 * 2 * length];
+        texture = font.getTexture();
+        float height = FILE_SIZE;
+        float sizeX = 0.0f;
+        float sizeY = text.length() == 0 ? 0.0f : fontSize * font.getCharacterSize(text.charAt(0)).y / height;
+
+        short indicesOffset = 0;
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            Vector4f parameter = font.getCharacterParameter(c);
+            Vector2f size = font.getCharacterSize(c);
+
+            // UV
+            uv[i + 0] = parameter.x / height;
+            uv[i + 1] = parameter.w / height;
+            uv[i + 2] = parameter.x / height;
+            uv[i + 3] = parameter.y / height;
+            uv[i + 4] = parameter.z / height;
+            uv[i + 5] = parameter.y / height;
+            uv[i + 6] = parameter.z / height;
+            uv[i + 7] = parameter.w / height;
+
+            // Vertices
+            Vector3f pos1 = modelMatrix.multiply(new Vector3f(sizeX, 0.0f, 0.0f));
+            Vector3f pos2 = modelMatrix.multiply(new Vector3f(sizeX, sizeY, 0.0f));
+            Vector3f pos3 = modelMatrix.multiply(new Vector3f(sizeX + fontSize * size.x / height, sizeY, 0.0f));
+            Vector3f pos4 = modelMatrix.multiply(new Vector3f(sizeX + fontSize * size.x / height, 0.0f, 0.0f));
+
+            vertices[12 * i + 0] = pos1.x;
+            vertices[12 * i + 1] = pos1.y;
+            vertices[12 * i + 2] = pos1.z;
+
+            vertices[12 * i + 3] = pos2.x;
+            vertices[12 * i + 4] = pos2.y;
+            vertices[12 * i + 5] = pos2.z;
+
+            vertices[12 * i + 6] = pos3.x;
+            vertices[12 * i + 7] = pos3.y;
+            vertices[12 * i + 8] = pos3.z;
+
+            vertices[12 * i + 9] = pos4.x;
+            vertices[12 * i + 10] = pos4.y;
+            vertices[12 * i + 11] = pos4.z;
+
+            sizeX += fontSize * size.x / height;
+
+            // Indices
+            indices[6 * i + 0] = (short) (indicesOffset + 0);
+            indices[6 * i + 1] = (short) (indicesOffset + 1);
+            indices[6 * i + 2] = (short) (indicesOffset + 2);
+            indices[6 * i + 3] = (short) (indicesOffset + 0);
+            indices[6 * i + 4] = (short) (indicesOffset + 2);
+            indices[6 * i + 5] = (short) (indicesOffset + 3);
+
+            indicesOffset += 4;
+        }
+
+        colors[0] = color.x;
+        colors[1] = color.y;
+        colors[2] = color.z;
+        colors[3] = color.w;
     }
 
     public void setText(String newText) {
