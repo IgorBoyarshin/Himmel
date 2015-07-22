@@ -160,46 +160,67 @@ public class FastSpriteRenderer extends Renderer {
             gpuBuffer.putFloat(v1.x);
             gpuBuffer.putFloat(v1.y);
             gpuBuffer.putFloat(v1.z);
-            gpuBuffer.putFloat(uv[2 * 0]);
-            gpuBuffer.putFloat(uv[2 * 0 + 1]);
-            gpuBuffer.putFloat(ts);
             gpuBuffer.putFloat(colors[4 * 0 + 0]);
             gpuBuffer.putFloat(colors[4 * 0 + 1]);
             gpuBuffer.putFloat(colors[4 * 0 + 2]);
             gpuBuffer.putFloat(colors[4 * 0 + 3]);
+            if (uv == null) {
+                gpuBuffer.putFloat(0.0f);
+                gpuBuffer.putFloat(0.0f);
+            } else {
+                gpuBuffer.putFloat(uv[2 * 0]);
+                gpuBuffer.putFloat(uv[2 * 0 + 1]);
+            }
+            gpuBuffer.putFloat(ts);
 
             gpuBuffer.putFloat(v2.x);
             gpuBuffer.putFloat(v2.y);
             gpuBuffer.putFloat(v2.z);
-            gpuBuffer.putFloat(uv[2 * 1]);
-            gpuBuffer.putFloat(uv[2 * 1]);
-            gpuBuffer.putFloat(ts);
             gpuBuffer.putFloat(colors[4 * 1 + 0]);
             gpuBuffer.putFloat(colors[4 * 1 + 1]);
             gpuBuffer.putFloat(colors[4 * 1 + 2]);
             gpuBuffer.putFloat(colors[4 * 1 + 3]);
+            if (uv == null) {
+                gpuBuffer.putFloat(0.0f);
+                gpuBuffer.putFloat(0.0f);
+            } else {
+                gpuBuffer.putFloat(uv[2 * 1]);
+                gpuBuffer.putFloat(uv[2 * 1 + 1]);
+            }
+            gpuBuffer.putFloat(ts);
 
             gpuBuffer.putFloat(v3.x);
             gpuBuffer.putFloat(v3.y);
             gpuBuffer.putFloat(v3.z);
-            gpuBuffer.putFloat(uv[2 * 2]);
-            gpuBuffer.putFloat(uv[2 * 2]);
-            gpuBuffer.putFloat(ts);
             gpuBuffer.putFloat(colors[4 * 2 + 0]);
             gpuBuffer.putFloat(colors[4 * 2 + 1]);
             gpuBuffer.putFloat(colors[4 * 2 + 2]);
             gpuBuffer.putFloat(colors[4 * 2 + 3]);
+            if (uv == null) {
+                gpuBuffer.putFloat(0.0f);
+                gpuBuffer.putFloat(0.0f);
+            } else {
+                gpuBuffer.putFloat(uv[2 * 2]);
+                gpuBuffer.putFloat(uv[2 * 2 + 1]);
+            }
+            gpuBuffer.putFloat(ts);
+
 
             gpuBuffer.putFloat(v4.x);
             gpuBuffer.putFloat(v4.y);
             gpuBuffer.putFloat(v4.z);
-            gpuBuffer.putFloat(uv[2 * 3]);
-            gpuBuffer.putFloat(uv[2 * 3]);
-            gpuBuffer.putFloat(ts);
             gpuBuffer.putFloat(colors[4 * 3 + 0]);
             gpuBuffer.putFloat(colors[4 * 3 + 1]);
             gpuBuffer.putFloat(colors[4 * 3 + 2]);
             gpuBuffer.putFloat(colors[4 * 3 + 3]);
+            if (uv == null) {
+                gpuBuffer.putFloat(0.0f);
+                gpuBuffer.putFloat(0.0f);
+            } else {
+                gpuBuffer.putFloat(uv[2 * 3]);
+                gpuBuffer.putFloat(uv[2 * 3 + 1]);
+            }
+            gpuBuffer.putFloat(ts);
         }
     }
 

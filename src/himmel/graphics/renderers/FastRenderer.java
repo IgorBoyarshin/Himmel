@@ -3,7 +3,6 @@ package himmel.graphics.renderers;
 import himmel.graphics.renderables.Renderable;
 import himmel.graphics.Shader;
 import himmel.graphics.buffers.IndexBuffer;
-import himmel.math.FloatArray;
 import himmel.math.Vector2f;
 import himmel.math.Vector3f;
 
@@ -158,8 +157,13 @@ public class FastRenderer extends Renderer {
                 gpuBuffer.putFloat(colors[4 * i + 2]);
                 gpuBuffer.putFloat(colors[4 * i + 3]);
 
-                gpuBuffer.putFloat(uv[2 * i]);
-                gpuBuffer.putFloat(uv[2 * i + 1]);
+                if (uv == null) {
+                    gpuBuffer.putFloat(0.0f);
+                    gpuBuffer.putFloat(0.0f);
+                } else {
+                    gpuBuffer.putFloat(uv[2 * i]);
+                    gpuBuffer.putFloat(uv[2 * i + 1]);
+                }
 
                 gpuBuffer.putFloat(ts);
             }

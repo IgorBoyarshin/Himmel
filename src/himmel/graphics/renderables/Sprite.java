@@ -2,7 +2,6 @@ package himmel.graphics.renderables;
 
 import himmel.graphics.*;
 import himmel.graphics.renderers.Renderer;
-import himmel.math.FloatArray;
 import himmel.math.Vector2f;
 import himmel.math.Vector3f;
 import himmel.math.Vector4f;
@@ -27,10 +26,10 @@ public class Sprite extends Renderable {
         this.size = size;
     }
 
-    public Sprite(Vector3f position, Vector2f size, Texture texture, float[] uvs, Renderer renderer, Shader shader) {
+    public Sprite(Vector3f position, Vector2f size, Texture texture, float[] uv, Renderer renderer, Shader shader) {
         super(convertVertices(position, size),
                 texture,
-                uvs,
+                uv,
                 new short[]{0, 1, 2, 0, 2, 3},
                 renderer, shader);
 

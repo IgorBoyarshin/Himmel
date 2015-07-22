@@ -16,7 +16,7 @@ public class Group extends Renderable {
     private Matrix4f transformationMatrix;
 
     public Group(Matrix4f transform) {
-        super(null, null, null, null);
+        super(null, null, null, null, null);
 
         children = new ArrayList<>();
         transformationMatrix = transform;
