@@ -19,35 +19,35 @@ public class Sprite extends Renderable {
 
     public Sprite(Vector3f position, Vector2f size, Vector4f color, Renderer renderer, Shader shader) {
         super(convertVertices(position, size),
-                new float[]{-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f, 0.5f, -0.5f},
+                convertColors(color),
                 new short[]{0, 1, 2, 0, 2, 3},
-                convertColors(color), renderer, shader);
+                renderer, shader);
+
         this.position = position;
         this.size = size;
-//        modelMatrix = Matrix4f.translation(new Vector3f(position.x, 10.0f, 0.0f));
     }
 
-//    public Sprite(Vector3f position, Vector2f size, Texture texture, Renderer renderer, Shader shader) {
-//        super(convertVertices(position, size),
-//                new float[]{-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f, 0.5f, -0.5f},
-//                new short[]{0, 1, 2, 0, 2, 3},
-//                convertColors(new Vector4f(1.0f, 1.0f, 0.0f, 1.0f)), renderer, shader);
-//        this.texture = texture;
-//        this.position = position;
-//        this.size = size;
-////        modelMatrix = Matrix4f.translation(new Vector3f(position.x, 10.0f, 0.0f));
-//    }
+    public Sprite(Vector3f position, Vector2f size, Texture texture, float[] uvs, Renderer renderer, Shader shader) {
+        super(convertVertices(position, size),
+                texture,
+                uvs,
+                new short[]{0, 1, 2, 0, 2, 3},
+                renderer, shader);
 
-    private static List<FloatArray> prepareFloats(Vector3f position, Vector2f size, Vector4f color) {
-        List<FloatArray> result = new ArrayList<>();
-        result.add(new FloatArray(convertVertices(position, size), 3));
-        result.add(new FloatArray(getDefaultUvs(), 2));
-        result.add(new FloatArray(convertColors(color), 4));
-        return result;
+        this.position = position;
+        this.size = size;
     }
 
-    private static float[] getDefaultUvs() {
+    private float[] getDefaultUvs() {
         return new float[]{0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f};
+    }
+
+    public static void transformIntoFloats(List<Vector2f> vectors) {
+        float[] floats = new float[vectors.size() * 2];
+        for (int i = 0; i < vectors.size(); i++) {
+            floats[i * 2] = vectors.get(i).x;
+            floats[i * 2 + 1] = vectors.get(i).y;
+        }
     }
 
     public void setTexture(Texture texture) {
@@ -55,30 +55,16 @@ public class Sprite extends Renderable {
     }
 
     public void setNewPosition(Vector3f position) {
-        setFloatArray(0, new FloatArray(convertVertices(position, size), 3));
+        this.vertices = convertVertices(position, size);
         this.position = position;
     }
 
-//    public static List<Vector2f> getDefaultUv() {
-//        List<Vector2f> uv = new ArrayList<>();
-//        uv.add(new Vector2f(0.0f, 1.0f));
-//        uv.add(new Vector2f(0.0f, 0.0f));
-//        uv.add(new Vector2f(1.0f, 0.0f));
-//        uv.add(new Vector2f(1.0f, 1.0f));
-//
-//        return uv;
-//    }
-
-//    public List<Vector2f> getUv() {
-//        return uv;
-//    }
-
-//    public void setUv(List<Vector2f> newUv) {
-//        this.uv = newUv;
-//    }
+    public void setUv(float[] uv) {
+        this.uv = uv;
+    }
 
     public void setSize(Vector2f size) {
-        setFloatArray(1, new FloatArray(convertVertices(position, size), 3));
+        this.vertices = convertVertices(position, size);
         this.size = size;
     }
 
@@ -124,6 +110,6 @@ public class Sprite extends Renderable {
     }
 
     public void setColor(Vector4f color) {
-        setFloatArray(1, new FloatArray(convertColors(color), 4));
+        this.colors = convertColors(color);
     }
 }
