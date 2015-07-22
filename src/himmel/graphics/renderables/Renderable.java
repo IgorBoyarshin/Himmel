@@ -14,40 +14,39 @@ import java.util.List;
 public class Renderable {
     protected float[] vertices;
     protected float[] normals;
-    protected short[] indices;
     protected float[] colors;
     protected Texture texture;
-    protected List<Vector2f> uv;
+    protected short[] indices;
+    //    protected List<Vector2f> uv;
+    protected float[] uv;
     protected Renderer renderer;
     protected Shader shader;
     protected Matrix4f modelMatrix;
 
     protected boolean alive = true;
 
-    public Renderable(float[] vertices, Texture texture, short[] indices, Renderer renderer, Shader shader) {
+    public Renderable(float[] vertices, Texture texture, float[] uv, short[] indices, Renderer renderer, Shader shader) {
         this.vertices = vertices;
         this.normals = null;
         this.colors = null;
         this.texture = texture;
+        this.uv = uv;
         this.indices = indices;
 
         this.renderer = renderer;
         this.shader = shader;
-
-        uv = new ArrayList<>();
     }
 
-    public Renderable(float[] vertices, float[] normals, Texture texture, short[] indices, Renderer renderer, Shader shader) {
+    public Renderable(float[] vertices, float[] normals, Texture texture, float[] uv, short[] indices, Renderer renderer, Shader shader) {
         this.vertices = vertices;
         this.normals = normals;
         this.colors = null;
         this.texture = texture;
+        this.uv = uv;
         this.indices = indices;
 
         this.renderer = renderer;
         this.shader = shader;
-
-        uv = new ArrayList<>();
     }
 
     public Renderable(float[] vertices, float[] colors, short[] indices, Renderer renderer, Shader shader) {
@@ -55,12 +54,11 @@ public class Renderable {
         this.normals = null;
         this.colors = colors;
         this.texture = null;
+        this.uv = null;
         this.indices = indices;
 
         this.renderer = renderer;
         this.shader = shader;
-
-        uv = new ArrayList<>();
     }
 
     public Renderable(float[] vertices, float[] normals, float[] colors, short[] indices, Renderer renderer, Shader shader) {
@@ -68,12 +66,11 @@ public class Renderable {
         this.normals = normals;
         this.colors = colors;
         this.texture = null;
+        this.uv = null;
         this.indices = indices;
 
         this.renderer = renderer;
         this.shader = shader;
-
-        uv = new ArrayList<>();
     }
 
     public void submit(Renderer renderer) {
@@ -124,7 +121,7 @@ public class Renderable {
         return colors;
     }
 
-    public List<Vector2f> getUV() {
+    public float[] getUV() {
         return uv;
     }
 }
