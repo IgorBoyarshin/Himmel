@@ -18,12 +18,10 @@ public class Sprite extends Renderable {
     private Vector2f size;
 
     public Sprite(Vector3f position, Vector2f size, Vector4f color, Renderer renderer, Shader shader) {
-//        super(convertVertices(position, size),
-//                new float[]{-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f, 0.5f, -0.5f},
-//                new short[]{0, 1, 2, 0, 2, 3},
-//                convertColors(color), renderer, shader);
-        super(prepareFloats(position, size, color),
-                new short[]{0, 1, 2, 0, 2, 3}, renderer, shader);
+        super(convertVertices(position, size),
+                new float[]{-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f, 0.5f, -0.5f},
+                new short[]{0, 1, 2, 0, 2, 3},
+                convertColors(color), renderer, shader);
         this.position = position;
         this.size = size;
 //        modelMatrix = Matrix4f.translation(new Vector3f(position.x, 10.0f, 0.0f));

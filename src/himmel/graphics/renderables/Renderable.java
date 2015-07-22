@@ -24,35 +24,61 @@ public class Renderable {
 
     protected boolean alive = true;
 
-    public Renderable(float[] vertices, float[] normals, short[] indices, float[] colors, Renderer renderer, Shader shader) {
+    public Renderable(float[] vertices, Texture texture, short[] indices, Renderer renderer, Shader shader) {
         this.vertices = vertices;
-        this.normals = normals;
+        this.normals = null;
+        this.colors = null;
+        this.texture = texture;
         this.indices = indices;
-        this.colors = colors;
 
         this.renderer = renderer;
         this.shader = shader;
 
         uv = new ArrayList<>();
-//        setDefaultUV();
+    }
+
+    public Renderable(float[] vertices, float[] normals, Texture texture, short[] indices, Renderer renderer, Shader shader) {
+        this.vertices = vertices;
+        this.normals = normals;
+        this.colors = null;
+        this.texture = texture;
+        this.indices = indices;
+
+        this.renderer = renderer;
+        this.shader = shader;
+
+        uv = new ArrayList<>();
+    }
+
+    public Renderable(float[] vertices, float[] colors, short[] indices, Renderer renderer, Shader shader) {
+        this.vertices = vertices;
+        this.normals = null;
+        this.colors = colors;
+        this.texture = null;
+        this.indices = indices;
+
+        this.renderer = renderer;
+        this.shader = shader;
+
+        uv = new ArrayList<>();
+    }
+
+    public Renderable(float[] vertices, float[] normals, float[] colors, short[] indices, Renderer renderer, Shader shader) {
+        this.vertices = vertices;
+        this.normals = normals;
+        this.colors = colors;
+        this.texture = null;
+        this.indices = indices;
+
+        this.renderer = renderer;
+        this.shader = shader;
+
+        uv = new ArrayList<>();
     }
 
     public void submit(Renderer renderer) {
-//        renderer.push(modelMatrix);
         renderer.submit(this);
-//        renderer.pop();
     }
-
-    public List<Vector2f> getUV() {
-        return uv;
-    }
-
-//    private void setDefaultUV() {
-//        uv.add(new Vector2f(0.0f, 1.0f));
-//        uv.add(new Vector2f(0.0f, 0.0f));
-//        uv.add(new Vector2f(1.0f, 0.0f));
-//        uv.add(new Vector2f(1.0f, 1.0f));
-//    }
 
     public boolean isAlive() {
         return alive;
@@ -85,18 +111,20 @@ public class Renderable {
     public short[] getIndices() {
         return indices;
     }
-//
+
     public float[] getVertices() {
         return vertices;
     }
 
-    public float[] getNormals() { return normals; }
+    public float[] getNormals() {
+        return normals;
+    }
 
     public float[] getColors() {
         return colors;
     }
 
-    public void setColors(float[] colors) {
-        this.colors = colors;
+    public List<Vector2f> getUV() {
+        return uv;
     }
 }
