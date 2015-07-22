@@ -97,8 +97,11 @@ public class FastRenderer extends Renderer {
             float[] colors = renderable.getColors();
             float[] uv = renderable.getUV();
             int tid = renderable.getTID();
+            short[] indices = renderable.getIndices();
 
-            if (currentVerticesAmount + vertices.length / 3 >= MAX_VERTICES) {
+            final int size = vertices.length / 3;
+
+            if (currentVerticesAmount + size >= MAX_VERTICES) {
                 // flush
                 end();
                 render();
@@ -106,12 +109,11 @@ public class FastRenderer extends Renderer {
             }
 
             // Indices
-            short[] indices = renderable.getIndices();
             for (short index : indices) {
                 ibo.addShort((short) (index + currentVerticesAmount));
             }
 
-            currentVerticesAmount += vertices.length / 3;
+            currentVerticesAmount += size;
             currentIndicesAmount += indices.length;
 
             float ts = 0.0f;
@@ -139,14 +141,17 @@ public class FastRenderer extends Renderer {
                 // render with colors
             }
 
-            List<Vector3f> transformedVertices = new ArrayList<>();
-            for (int i = 0; i < vertices.length / 3; i++) {
-                transformedVertices.add(transformationStackCash.multiply(
-                        new Vector3f(vertices[3 * i + 0], vertices[3 * i + 1], vertices[3 * i + 2])));
-            }
+//            List<Vector3f> transformedVertices = new ArrayList<>();
+//            for (int i = 0; i < size; i++) {
+//                transformedVertices.add(transformationStackCash.multiply(
+//                        new Vector3f(vertices[3 * i + 0], vertices[3 * i + 1], vertices[3 * i + 2])));
+////                transformedVertices.add(new Vector3f(vertices[3 * i + 0], vertices[3 * i + 1], vertices[3 * i + 2]));
+//            }
 
-            for (int i = 0; i < vertices.length / 3; i++) {
-                Vector3f vertex = transformedVertices.get(i);
+            for (int i = 0; i < size; i++) {
+//                Vector3f vertex = transformedVertices.get(i);
+                Vector3f vertex = transformationStackCash.multiply(
+                        new Vector3f(vertices[3 * i + 0], vertices[3 * i + 1], vertices[3 * i + 2]));
 
                 gpuBuffer.putFloat(vertex.x);
                 gpuBuffer.putFloat(vertex.y);
