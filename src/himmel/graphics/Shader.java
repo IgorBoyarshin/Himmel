@@ -19,11 +19,11 @@ import static org.lwjgl.opengl.GL20.glUseProgram;
  * Created by Igor on 01-May-15.
  */
 public class Shader {
-    public static final int ATTR_VERTEX = 0;
-    public static final int ATTR_UV = 1;
-    public static final int ATTR_TID = 2;
-    public static final int ATTR_COLOR = 3;
-    public static final int ATTR_NORMAL = 4;
+//    public static final int ATTR_VERTEX = 0;
+//    public static final int ATTR_NORMAL = 1;
+//    public static final int ATTR_UV = 2;
+//    public static final int ATTR_TID = 3;
+//    public static final int ATTR_COLOR = 4;
 
     private Map<String, Integer> locationCache = new HashMap<String, Integer>();
 

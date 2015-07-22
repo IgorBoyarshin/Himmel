@@ -2,6 +2,7 @@ package himmel.graphics.renderables;
 
 import himmel.graphics.*;
 import himmel.graphics.renderers.Renderer;
+import himmel.math.FloatArray;
 import himmel.math.Vector2f;
 import himmel.math.Vector3f;
 import himmel.math.Vector4f;
@@ -17,20 +18,38 @@ public class Sprite extends Renderable {
     private Vector2f size;
 
     public Sprite(Vector3f position, Vector2f size, Vector4f color, Renderer renderer, Shader shader) {
-        super(convertVertices(position, size), new short[]{0, 1, 2, 0, 2, 3},
-                convertColors(color), renderer, shader);
+//        super(convertVertices(position, size),
+//                new float[]{-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f, 0.5f, -0.5f},
+//                new short[]{0, 1, 2, 0, 2, 3},
+//                convertColors(color), renderer, shader);
+        super(prepareFloats(position, size, color),
+                new short[]{0, 1, 2, 0, 2, 3}, renderer, shader);
         this.position = position;
         this.size = size;
 //        modelMatrix = Matrix4f.translation(new Vector3f(position.x, 10.0f, 0.0f));
     }
 
-    public Sprite(Vector3f position, Vector2f size, Texture texture, Renderer renderer, Shader shader) {
-        super(convertVertices(position, size), new short[]{0, 1, 2, 0, 2, 3},
-                convertColors(new Vector4f(1.0f, 1.0f, 0.0f, 1.0f)), renderer, shader);
-        this.texture = texture;
-        this.position = position;
-        this.size = size;
-//        modelMatrix = Matrix4f.translation(new Vector3f(position.x, 10.0f, 0.0f));
+//    public Sprite(Vector3f position, Vector2f size, Texture texture, Renderer renderer, Shader shader) {
+//        super(convertVertices(position, size),
+//                new float[]{-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f, 0.5f, -0.5f},
+//                new short[]{0, 1, 2, 0, 2, 3},
+//                convertColors(new Vector4f(1.0f, 1.0f, 0.0f, 1.0f)), renderer, shader);
+//        this.texture = texture;
+//        this.position = position;
+//        this.size = size;
+////        modelMatrix = Matrix4f.translation(new Vector3f(position.x, 10.0f, 0.0f));
+//    }
+
+    private static List<FloatArray> prepareFloats(Vector3f position, Vector2f size, Vector4f color) {
+        List<FloatArray> result = new ArrayList<>();
+        result.add(new FloatArray(convertVertices(position, size), 3));
+        result.add(new FloatArray(getDefaultUvs(), 2));
+        result.add(new FloatArray(convertColors(color), 4));
+        return result;
+    }
+
+    private static float[] getDefaultUvs() {
+        return new float[]{0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f};
     }
 
     public void setTexture(Texture texture) {
@@ -38,31 +57,31 @@ public class Sprite extends Renderable {
     }
 
     public void setNewPosition(Vector3f position) {
-        vertices = convertVertices(position, size);
+        setFloatArray(0, new FloatArray(convertVertices(position, size), 3));
         this.position = position;
     }
 
-    public static List<Vector2f> getDefaultUv() {
-        List<Vector2f> uv = new ArrayList<>();
-        uv.add(new Vector2f(0.0f, 1.0f));
-        uv.add(new Vector2f(0.0f, 0.0f));
-        uv.add(new Vector2f(1.0f, 0.0f));
-        uv.add(new Vector2f(1.0f, 1.0f));
+//    public static List<Vector2f> getDefaultUv() {
+//        List<Vector2f> uv = new ArrayList<>();
+//        uv.add(new Vector2f(0.0f, 1.0f));
+//        uv.add(new Vector2f(0.0f, 0.0f));
+//        uv.add(new Vector2f(1.0f, 0.0f));
+//        uv.add(new Vector2f(1.0f, 1.0f));
+//
+//        return uv;
+//    }
 
-        return uv;
-    }
+//    public List<Vector2f> getUv() {
+//        return uv;
+//    }
 
-    public List<Vector2f> getUv() {
-        return uv;
-    }
-
-    public void setUv(List<Vector2f> newUv) {
-        this.uv = newUv;
-    }
+//    public void setUv(List<Vector2f> newUv) {
+//        this.uv = newUv;
+//    }
 
     public void setSize(Vector2f size) {
+        setFloatArray(1, new FloatArray(convertVertices(position, size), 3));
         this.size = size;
-        vertices = convertVertices(position, size);
     }
 
     public void scale(Vector2f scaler) {
@@ -107,6 +126,6 @@ public class Sprite extends Renderable {
     }
 
     public void setColor(Vector4f color) {
-        this.setColors(convertColors(color));
+        setFloatArray(1, new FloatArray(convertColors(color), 4));
     }
 }

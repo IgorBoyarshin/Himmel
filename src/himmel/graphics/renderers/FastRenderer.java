@@ -3,6 +3,7 @@ package himmel.graphics.renderers;
 import himmel.graphics.renderables.Renderable;
 import himmel.graphics.Shader;
 import himmel.graphics.buffers.IndexBuffer;
+import himmel.math.FloatArray;
 import himmel.math.Vector2f;
 import himmel.math.Vector3f;
 
@@ -29,10 +30,11 @@ public class FastRenderer extends Renderer {
     private ByteBuffer gpuBuffer;
     private List<Integer> textureSlots;
 
-    private final int FLOAT_SIZE_BYTES = 4;
-    private final int COMPONENT_SIZE_BYTES = FLOAT_SIZE_BYTES * (3 + 1 + 2 + 4);
+    //    private final int COMPONENT_SIZE_BYTES = FLOAT_SIZE_BYTES * (3 + 3 + 1 + 2 + 4);
+    private final int COMPONENT_SIZE_BYTES;
     private final int MAX_VERTICES = Short.MAX_VALUE; // because indices have type Short
-    private final int BUFFER_SIZE = COMPONENT_SIZE_BYTES * MAX_VERTICES;
+    //    private final int BUFFER_SIZE = COMPONENT_SIZE_BYTES * MAX_VERTICES;
+    private final int BUFFER_SIZE;
 
     private int currentVerticesAmount;
     private int currentIndicesAmount;
@@ -40,8 +42,17 @@ public class FastRenderer extends Renderer {
 
     private boolean filling;
 
-    public FastRenderer() {
-        init();
+    public FastRenderer(List<ShaderComponent> shaderComponents) {
+        super(shaderComponents);
+
+        int componentSizeBytes = 0;
+        for (ShaderComponent component : shaderComponents) {
+            componentSizeBytes += component.getAmount() * component.getType().getBytes();
+        }
+        this.COMPONENT_SIZE_BYTES = componentSizeBytes;
+        this.BUFFER_SIZE = COMPONENT_SIZE_BYTES * MAX_VERTICES;
+
+        init(shaderComponents);
         textureSlots = new ArrayList<>();
     }
 
@@ -51,7 +62,7 @@ public class FastRenderer extends Renderer {
         ibo.destruct();
     }
 
-    private void init() {
+    private void init(List<ShaderComponent> shaderComponents) {
         vao = glGenVertexArrays();
         vbo = glGenBuffers();
         ibo = new IndexBuffer(true);
@@ -60,15 +71,24 @@ public class FastRenderer extends Renderer {
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBufferData(GL_ARRAY_BUFFER, BUFFER_SIZE, null, GL_DYNAMIC_DRAW);
 
-        glEnableVertexAttribArray(Shader.ATTR_VERTEX);
-        glEnableVertexAttribArray(Shader.ATTR_UV);
-        glEnableVertexAttribArray(Shader.ATTR_TID);
-        glEnableVertexAttribArray(Shader.ATTR_COLOR);
+        // TODO: add support for other component's types
+        int offsetForComponent = 0;
+        for (ShaderComponent component : shaderComponents) {
+            glEnableVertexAttribArray(component.getLocation());
+            glVertexAttribPointer(component.getLocation(), component.getAmount(),
+                    component.getType().equals(ShaderComponent.TYPE.FLOAT) ? GL_FLOAT : GL_FLOAT, false, COMPONENT_SIZE_BYTES, offsetForComponent);
+            offsetForComponent += component.getAmount() * component.getType().getBytes();
+        }
 
-        glVertexAttribPointer(Shader.ATTR_VERTEX, 3, GL_FLOAT, false, COMPONENT_SIZE_BYTES, 0);
-        glVertexAttribPointer(Shader.ATTR_UV, 2, GL_FLOAT, false, COMPONENT_SIZE_BYTES, 12);
-        glVertexAttribPointer(Shader.ATTR_TID, 1, GL_FLOAT, false, COMPONENT_SIZE_BYTES, 12 + 8);
-        glVertexAttribPointer(Shader.ATTR_COLOR, 4, GL_FLOAT, false, COMPONENT_SIZE_BYTES, 12 + 8 + 4);
+//        glEnableVertexAttribArray(Shader.ATTR_VERTEX);
+//        glEnableVertexAttribArray(Shader.ATTR_UV);
+//        glEnableVertexAttribArray(Shader.ATTR_TID);
+//        glEnableVertexAttribArray(Shader.ATTR_COLOR);
+//
+//        glVertexAttribPointer(Shader.ATTR_VERTEX, 3, GL_FLOAT, false, COMPONENT_SIZE_BYTES, 0);
+//        glVertexAttribPointer(Shader.ATTR_UV, 2, GL_FLOAT, false, COMPONENT_SIZE_BYTES, 12);
+//        glVertexAttribPointer(Shader.ATTR_TID, 1, GL_FLOAT, false, COMPONENT_SIZE_BYTES, 12 + 8);
+//        glVertexAttribPointer(Shader.ATTR_COLOR, 4, GL_FLOAT, false, COMPONENT_SIZE_BYTES, 12 + 8 + 4);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
@@ -77,12 +97,18 @@ public class FastRenderer extends Renderer {
     @Override
     public void submit(Renderable renderable) {
         if (filling) {
-            float[] vertices = renderable.getVertices();
-            float[] colors = renderable.getColors();
-            List<Vector2f> uv = renderable.getUV();
+//            float[] vertices = renderable.getVertices();
+//            float[] colors = renderable.getColors();
+//            List<Vector2f> uv = renderable.getUV();
             int tid = renderable.getTID();
+            // TODO: Mb make this method in Renderable
+            List<FloatArray> floatArrays = new ArrayList<>();
+            for (int i = 0; i < renderable.getAmountOfFloatArrays(); i++) {
+                floatArrays.add(renderable.getFloatArray(i));
+            }
+            FloatArray vertices = floatArrays.get(0);
 
-            if (currentVerticesAmount + vertices.length / 3 >= MAX_VERTICES) {
+            if (currentVerticesAmount + vertices.size() / 3 >= MAX_VERTICES) {
                 // flush
                 end();
                 render();
@@ -95,7 +121,7 @@ public class FastRenderer extends Renderer {
                 ibo.addShort((short) (index + currentVerticesAmount));
             }
 
-            currentVerticesAmount += vertices.length / 3;
+            currentVerticesAmount += vertices.size() / 3;
             currentIndicesAmount += indices.length;
 
             float ts = 0.0f;
@@ -124,24 +150,36 @@ public class FastRenderer extends Renderer {
             }
 
             List<Vector3f> transformedVertices = new ArrayList<>();
-            for (int i = 0; i < vertices.length / 3; i++) {
-                transformedVertices.add(transformationStackCash.multiply(new Vector3f(vertices[3 * i + 0], vertices[3 * i + 1], vertices[3 * i + 2])));
-//                transformedVertices.add(new Vector3f(vertices[3 * i + 0], vertices[3 * i + 1], vertices[3 * i + 2]));
+            for (int i = 0; i < vertices.size() / 3; i++) {
+//                transformedVertices.add(transformationStackCash.multiply(
+//                        new Vector3f(vertices[3 * i + 0], vertices[3 * i + 1], vertices[3 * i + 2])));
+                transformedVertices.add(transformationStackCash.multiply(vertices.getVector3f(i)));
             }
 
-            for (int i = 0; i < vertices.length / 3; i++) {
+            final int amountOfFloatArrays = floatArrays.size();
+            for (int i = 0; i < vertices.size() / 3; i++) {
                 Vector3f vertex = transformedVertices.get(i);
 
                 gpuBuffer.putFloat(vertex.x);
                 gpuBuffer.putFloat(vertex.y);
                 gpuBuffer.putFloat(vertex.z);
-                gpuBuffer.putFloat(uv.get(i).x);
-                gpuBuffer.putFloat(uv.get(i).y);
+
+                for (int j = 1; j < amountOfFloatArrays; j++) {
+                    final int count = floatArrays.get(j).getCount();
+                    for (int amountOfElements = 0; amountOfElements < count; amountOfElements++) {
+                        gpuBuffer.putFloat(floatArrays.get(j).getFloat(i * count + amountOfElements));
+                    }
+                }
+
                 gpuBuffer.putFloat(ts);
-                gpuBuffer.putFloat(colors[4 * i + 0]);
-                gpuBuffer.putFloat(colors[4 * i + 1]);
-                gpuBuffer.putFloat(colors[4 * i + 2]);
-                gpuBuffer.putFloat(colors[4 * i + 3]);
+
+//                gpuBuffer.putFloat(uv.get(i).x);
+//                gpuBuffer.putFloat(uv.get(i).y);
+//                gpuBuffer.putFloat(ts);
+//                gpuBuffer.putFloat(colors[4 * i + 0]);
+//                gpuBuffer.putFloat(colors[4 * i + 1]);
+//                gpuBuffer.putFloat(colors[4 * i + 2]);
+//                gpuBuffer.putFloat(colors[4 * i + 3]);
             }
         }
     }

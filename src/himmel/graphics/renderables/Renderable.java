@@ -3,10 +3,7 @@ package himmel.graphics.renderables;
 import himmel.graphics.Shader;
 import himmel.graphics.Texture;
 import himmel.graphics.renderers.Renderer;
-import himmel.math.Matrix4f;
-import himmel.math.Vector2f;
-import himmel.math.Vector3f;
-import himmel.math.Vector4f;
+import himmel.math.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,33 +12,51 @@ import java.util.List;
  * Created by Igor on 21-May-15.
  */
 public class Renderable {
-    protected float[] vertices;
+//    protected float[] vertices;
+//    protected float[] normals;
     protected short[] indices;
-    protected float[] colors;
+//    protected float[] colors;
     protected Texture texture;
-    protected List<Vector2f> uv;
+//    protected List<Vector2f> uv;
     protected Renderer renderer;
     protected Shader shader;
     protected Matrix4f modelMatrix;
 
     protected boolean alive = true;
 
-    public static class Content {
+    protected List<FloatArray> floats;
 
-    }
-
-    public Renderable(float[] vertices, short[] indices, float[] colors, Renderer renderer, Shader shader) {
-        this.vertices = vertices;
+    public Renderable(List<FloatArray> floats, short[] indices, Renderer renderer, Shader shader) {
+        this.floats = floats;
         this.indices = indices;
-        this.colors = colors;
-
         this.renderer = renderer;
         this.shader = shader;
-//        modelMatrix = Matrix4f.rotation(20.0f, 0.0f, 0.0f, 1.0f);
-
-        uv = new ArrayList<>();
-        setDefaultUV();
     }
+
+    public FloatArray getFloatArray(int id) {
+        return floats.get(id);
+    }
+
+    public void setFloatArray(int id, FloatArray newArray) {
+        floats.set(id, newArray);
+    }
+
+    public int getAmountOfFloatArrays() {
+        return floats.size();
+    }
+
+//    public Renderable(float[] vertices, float[] normals, short[] indices, float[] colors, Renderer renderer, Shader shader) {
+//        this.vertices = vertices;
+//        this.normals = normals;
+//        this.indices = indices;
+//        this.colors = colors;
+//
+//        this.renderer = renderer;
+//        this.shader = shader;
+//
+//        uv = new ArrayList<>();
+//        setDefaultUV();
+//    }
 
     public void submit(Renderer renderer) {
 //        renderer.push(modelMatrix);
@@ -49,16 +64,16 @@ public class Renderable {
 //        renderer.pop();
     }
 
-    public List<Vector2f> getUV() {
-        return uv;
-    }
+//    public List<Vector2f> getUV() {
+//        return uv;
+//    }
 
-    private void setDefaultUV() {
-        uv.add(new Vector2f(0.0f, 1.0f));
-        uv.add(new Vector2f(0.0f, 0.0f));
-        uv.add(new Vector2f(1.0f, 0.0f));
-        uv.add(new Vector2f(1.0f, 1.0f));
-    }
+//    private void setDefaultUV() {
+//        uv.add(new Vector2f(0.0f, 1.0f));
+//        uv.add(new Vector2f(0.0f, 0.0f));
+//        uv.add(new Vector2f(1.0f, 0.0f));
+//        uv.add(new Vector2f(1.0f, 1.0f));
+//    }
 
     public boolean isAlive() {
         return alive;
@@ -66,6 +81,10 @@ public class Renderable {
 
     public void die() {
         alive = false;
+    }
+
+    public void setModelMatrix(Matrix4f matrix) {
+        this.modelMatrix = matrix;
     }
 
     public Matrix4f getModelMatrix() {
@@ -87,16 +106,49 @@ public class Renderable {
     public short[] getIndices() {
         return indices;
     }
+//
+//    public float[] getVertices() {
+//        return vertices;
+//    }
+//
+//    public float[] getNormals() { return normals; }
+//
+//    public float[] getColors() {
+//        return colors;
+//    }
 
-    public float[] getVertices() {
-        return vertices;
+//    public void setColors(float[] colors) {
+//        this.colors = colors;
+//    }
+
+
+    // Under development
+
+
+    public enum ContentElementType {
+        FLOAT, INT, SHORT;
     }
 
-    public float[] getColors() {
-        return colors;
+    public class ContentElement {
+        private ContentElementType type;
+        private final int amount;
+
+        public ContentElement(ContentElementType type, final int amount) {
+            this.type = type;
+            this.amount = amount;
+        }
+
+        public ContentElementType getType() {
+            return type;
+        }
+
+        public final int getAmount() {
+            return amount;
+        }
     }
 
-    public void setColors(float[] colors) {
-        this.colors = colors;
+    public class Content {
+        // TODO
+        private List<ContentElement> elements;
     }
 }
