@@ -12,51 +12,30 @@ import java.util.List;
  * Created by Igor on 21-May-15.
  */
 public class Renderable {
-//    protected float[] vertices;
-//    protected float[] normals;
+    protected float[] vertices;
+    protected float[] normals;
     protected short[] indices;
-//    protected float[] colors;
+    protected float[] colors;
     protected Texture texture;
-//    protected List<Vector2f> uv;
+    protected List<Vector2f> uv;
     protected Renderer renderer;
     protected Shader shader;
     protected Matrix4f modelMatrix;
 
     protected boolean alive = true;
 
-    protected List<FloatArray> floats;
-
-    public Renderable(List<FloatArray> floats, short[] indices, Renderer renderer, Shader shader) {
-        this.floats = floats;
+    public Renderable(float[] vertices, float[] normals, short[] indices, float[] colors, Renderer renderer, Shader shader) {
+        this.vertices = vertices;
+        this.normals = normals;
         this.indices = indices;
+        this.colors = colors;
+
         this.renderer = renderer;
         this.shader = shader;
-    }
 
-    public FloatArray getFloatArray(int id) {
-        return floats.get(id);
-    }
-
-    public void setFloatArray(int id, FloatArray newArray) {
-        floats.set(id, newArray);
-    }
-
-    public int getAmountOfFloatArrays() {
-        return floats.size();
-    }
-
-//    public Renderable(float[] vertices, float[] normals, short[] indices, float[] colors, Renderer renderer, Shader shader) {
-//        this.vertices = vertices;
-//        this.normals = normals;
-//        this.indices = indices;
-//        this.colors = colors;
-//
-//        this.renderer = renderer;
-//        this.shader = shader;
-//
-//        uv = new ArrayList<>();
+        uv = new ArrayList<>();
 //        setDefaultUV();
-//    }
+    }
 
     public void submit(Renderer renderer) {
 //        renderer.push(modelMatrix);
@@ -64,9 +43,9 @@ public class Renderable {
 //        renderer.pop();
     }
 
-//    public List<Vector2f> getUV() {
-//        return uv;
-//    }
+    public List<Vector2f> getUV() {
+        return uv;
+    }
 
 //    private void setDefaultUV() {
 //        uv.add(new Vector2f(0.0f, 1.0f));
@@ -107,48 +86,17 @@ public class Renderable {
         return indices;
     }
 //
-//    public float[] getVertices() {
-//        return vertices;
-//    }
-//
-//    public float[] getNormals() { return normals; }
-//
-//    public float[] getColors() {
-//        return colors;
-//    }
-
-//    public void setColors(float[] colors) {
-//        this.colors = colors;
-//    }
-
-
-    // Under development
-
-
-    public enum ContentElementType {
-        FLOAT, INT, SHORT;
+    public float[] getVertices() {
+        return vertices;
     }
 
-    public class ContentElement {
-        private ContentElementType type;
-        private final int amount;
+    public float[] getNormals() { return normals; }
 
-        public ContentElement(ContentElementType type, final int amount) {
-            this.type = type;
-            this.amount = amount;
-        }
-
-        public ContentElementType getType() {
-            return type;
-        }
-
-        public final int getAmount() {
-            return amount;
-        }
+    public float[] getColors() {
+        return colors;
     }
 
-    public class Content {
-        // TODO
-        private List<ContentElement> elements;
+    public void setColors(float[] colors) {
+        this.colors = colors;
     }
 }
