@@ -113,7 +113,7 @@ public class Sprite extends Renderable {
     }
 
     public void setColor(float[] colors) {
-        if (colors.length == 12) {
+        if (colors.length == 16) {
             this.colors = colors;
         }
     }
