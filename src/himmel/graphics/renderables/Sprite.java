@@ -111,4 +111,10 @@ public class Sprite extends Renderable {
     public void setColor(Vector4f color) {
         this.colors = convertColors(color);
     }
+
+    public void setColor(float[] colors) {
+        if (colors.length == 12) {
+            this.colors = colors;
+        }
+    }
 }
