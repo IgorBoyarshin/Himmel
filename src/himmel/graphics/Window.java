@@ -29,6 +29,7 @@ public class Window {
     private InputMouse mouse;
 
     private final boolean RESIZABLE = false;
+    private final boolean FULLSCREEN;
     private final int SWAP_INTERWAL;
     private final boolean LOG_INFO;
     private final AntiAliasing ANTI_ALIASING;
@@ -38,12 +39,14 @@ public class Window {
     public static final AntiAliasing ANTI_ALIASING_4X = AntiAliasing.ANTI_ALIASING_4X;
     public static final AntiAliasing ANTI_ALIASING_8X = AntiAliasing.ANTI_ALIASING_8X;
 
-    public Window(String title, int width, int height, AntiAliasing antiAliasing, boolean vsync, boolean log) {
+    public Window(String title, int width, int height, AntiAliasing antiAliasing, boolean vsync, boolean fullscreen,
+                  boolean log) {
         this.TITLE = title;
         this.WIDTH = width;
         this.HEIGHT = height;
         this.ANTI_ALIASING = antiAliasing;
         this.SWAP_INTERWAL = vsync ? 1 : 0;
+        this.FULLSCREEN = fullscreen;
         this.LOG_INFO = log;
 
         if (LOG_INFO) {
@@ -69,6 +72,7 @@ public class Window {
         this.HEIGHT = height;
         this.ANTI_ALIASING = AntiAliasing.ANTI_ALIASING_OFF;
         this.SWAP_INTERWAL = 1;
+        this.FULLSCREEN = false;
         this.LOG_INFO = false;
 
         if (LOG_INFO) {
@@ -152,7 +156,10 @@ public class Window {
         glfwWindowHint(GLFW_RESIZABLE, RESIZABLE ? GL_TRUE : GL_FALSE);
         glfwWindowHint(GLFW_SAMPLES, ANTI_ALIASING.samples);
 
-        glfwWindow = glfwCreateWindow(WIDTH, HEIGHT, TITLE, NULL, NULL);
+        ByteBuffer vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+        glfwWindow = glfwCreateWindow(FULLSCREEN ? GLFWvidmode.width(vidmode) : WIDTH,
+                FULLSCREEN ? GLFWvidmode.height(vidmode) : HEIGHT,
+                TITLE, FULLSCREEN ? glfwGetPrimaryMonitor() : NULL, NULL);
 
         if (glfwWindow == NULL) {
             Log.logError("Unable to creat GLFW Window");
@@ -167,12 +174,14 @@ public class Window {
 //        glfwSetInputMode(glfwWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         glfwSetCursorPos(glfwWindow, 0.0d, 0.0d);
 
-        ByteBuffer vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-        glfwSetWindowPos(
-                glfwWindow,
-                (GLFWvidmode.width(vidmode) - WIDTH) / 2,
-                (GLFWvidmode.height(vidmode) - HEIGHT) / 2
-        );
+        if (!FULLSCREEN) {
+//            ByteBuffer vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+            glfwSetWindowPos(
+                    glfwWindow,
+                    (GLFWvidmode.width(vidmode) - WIDTH) / 2,
+                    (GLFWvidmode.height(vidmode) - HEIGHT) / 2
+            );
+        }
 
         glfwMakeContextCurrent(glfwWindow);
         glfwSwapInterval(SWAP_INTERWAL);
