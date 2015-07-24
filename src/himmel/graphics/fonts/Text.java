@@ -153,14 +153,14 @@ public class Text extends Renderable {
             Vector2f size = font.getCharacterSize(c);
 
             // UV
-            uv[i + 0] = parameter.x / height;
-            uv[i + 1] = parameter.w / height;
-            uv[i + 2] = parameter.x / height;
-            uv[i + 3] = parameter.y / height;
-            uv[i + 4] = parameter.z / height;
-            uv[i + 5] = parameter.y / height;
-            uv[i + 6] = parameter.z / height;
-            uv[i + 7] = parameter.w / height;
+            uv[i*8 + 0] = parameter.x / height;
+            uv[i*8 + 1] = parameter.w / height;
+            uv[i*8 + 2] = parameter.x / height;
+            uv[i*8 + 3] = parameter.y / height;
+            uv[i*8 + 4] = parameter.z / height;
+            uv[i*8 + 5] = parameter.y / height;
+            uv[i*8 + 6] = parameter.z / height;
+            uv[i*8 + 7] = parameter.w / height;
 
             // Vertices
             Vector3f pos1 = modelMatrix.multiply(new Vector3f(sizeX, 0.0f, 0.0f));
