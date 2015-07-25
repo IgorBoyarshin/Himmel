@@ -71,6 +71,14 @@ public class Matrix4f {
         return result;
     }
 
+    public Vector3f multiply(float x, float y, float z) {
+        float xx = matrix[0 + 0 * 4] * x + matrix[0 + 1 * 4] * y + matrix[0 + 2 * 4] * z + matrix[0 + 3 * 4];
+        float yy = matrix[1 + 0 * 4] * x + matrix[1 + 1 * 4] * y + matrix[1 + 2 * 4] * z + matrix[1 + 3 * 4];
+        float zz = matrix[2 + 0 * 4] * x + matrix[2 + 1 * 4] * y + matrix[2 + 2 * 4] * z + matrix[2 + 3 * 4];
+
+        return new Vector3f(xx, yy, zz);
+    }
+
     public Vector3f multiply(Vector3f vector) {
         float x = matrix[0 + 0 * 4] * vector.x + matrix[0 + 1 * 4] * vector.y + matrix[0 + 2 * 4] * vector.z + matrix[0 + 3 * 4];
         float y = matrix[1 + 0 * 4] * vector.x + matrix[1 + 1 * 4] * vector.y + matrix[1 + 2 * 4] * vector.z + matrix[1 + 3 * 4];
