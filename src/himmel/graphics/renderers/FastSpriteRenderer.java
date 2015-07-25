@@ -89,6 +89,7 @@ public class FastSpriteRenderer extends Renderer {
         ibo = new IndexBuffer(true, false);
         ibo.begin();
 
+        // TODO: works only with shorts now
         short offset = 0;
         for (int i = 0; i < MAX_INDICES; i += 6) {
             ibo.addShort((short) (offset + 0));
@@ -235,7 +236,7 @@ public class FastSpriteRenderer extends Renderer {
             glBindVertexArray(vao);
             ibo.bind();
 
-            glDrawElements(GL_TRIANGLES, currentIndicesCount, GL_UNSIGNED_SHORT, 0);
+            glDrawElements(GL_TRIANGLES, currentIndicesCount, ibo.getType(), 0);
 
             ibo.unbind();
             glBindVertexArray(0);
