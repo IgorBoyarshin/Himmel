@@ -19,8 +19,10 @@ public class IndexBuffer {
     private final int type;
 
     private final int BYTES_IN_SHORT = 2;
+    private final int BYTES_IN_INT = 4;
     // TODO: determine the best multiplier. Usually it is around 3/2
-    private final int BUFFER_SIZE_BYTES = Short.MAX_VALUE * 4 * BYTES_IN_SHORT;
+//    private final int BUFFER_SIZE_BYTES = Short.MAX_VALUE * 3 * BYTES_IN_INT;
+    private final int BUFFER_SIZE_BYTES;
     private ByteBuffer bufferData;
 
     private boolean filling;
@@ -39,9 +41,11 @@ public class IndexBuffer {
 //        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 //    }
 
-    public IndexBuffer(boolean isDynamic) {
-        type = GL_UNSIGNED_SHORT;
+    public IndexBuffer(boolean isShort, boolean isDynamic) {
+        type = isShort ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
         filling = false;
+
+        BUFFER_SIZE_BYTES = Short.MAX_VALUE * 8 * 3 * (isShort ? BYTES_IN_SHORT : BYTES_IN_INT);
 
         bufferID = glGenBuffers();
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferID);
@@ -50,7 +54,15 @@ public class IndexBuffer {
     }
 
     public void addShort(short index) {
-        bufferData.putShort(index);
+        if (type == GL_UNSIGNED_SHORT) {
+            bufferData.putShort(index);
+        }
+    }
+
+    public void addInt(int index) {
+        if (type == GL_UNSIGNED_INT) {
+            bufferData.putInt(index);
+        }
     }
 
     public void begin() {
