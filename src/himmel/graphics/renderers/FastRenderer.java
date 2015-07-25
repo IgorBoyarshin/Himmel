@@ -46,7 +46,7 @@ public class FastRenderer extends Renderer {
                     UV_FLOATS_PER_COMPONENT +
                     TID_FLOATS_PER_COMPONENT +
                     COLOR_FLOATS_PER_COMPONENT);
-    private final int MAX_VERTICES = Short.MAX_VALUE; // because indices have type Short
+    private final int MAX_VERTICES = 10 * Short.MAX_VALUE;
     private final int BUFFER_SIZE = COMPONENT_SIZE_BYTES * MAX_VERTICES;
 
     private int currentVerticesAmount;
@@ -112,7 +112,7 @@ public class FastRenderer extends Renderer {
             for (short index : indices) {
                 if (ibo.getType() == GL_UNSIGNED_SHORT) {
                     ibo.addShort((short) (index + currentVerticesAmount));
-                } else  {
+                } else {
                     ibo.addInt(index + currentVerticesAmount);
                 }
             }
