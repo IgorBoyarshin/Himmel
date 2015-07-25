@@ -36,6 +36,7 @@ public class Renderable {
         this.texture = texture;
         this.uv = uv;
         this.indices = indices;
+        this.matrixId = 0.0f;
 
         this.renderingSet = renderingSet;
     }
@@ -47,6 +48,7 @@ public class Renderable {
         this.texture = texture;
         this.uv = uv;
         this.indices = indices;
+        this.matrixId = 0.0f;
 
         this.renderingSet = renderingSet;
     }
@@ -58,6 +60,7 @@ public class Renderable {
         this.texture = null;
         this.uv = null;
         this.indices = indices;
+        this.matrixId = 0.0f;
 
         this.renderingSet = renderingSet;
     }
@@ -69,6 +72,7 @@ public class Renderable {
         this.texture = null;
         this.uv = null;
         this.indices = indices;
+        this.matrixId = 0.0f;
 
         this.renderingSet = renderingSet;
     }
