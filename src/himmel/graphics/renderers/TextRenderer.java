@@ -88,7 +88,7 @@ public class TextRenderer extends Renderer {
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        ibo = new IndexBuffer(false);
+        ibo = new IndexBuffer(true, false);
 
         ibo.begin();
 

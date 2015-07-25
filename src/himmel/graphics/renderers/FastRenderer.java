@@ -70,7 +70,7 @@ public class FastRenderer extends Renderer {
     private void init() {
         vao = glGenVertexArrays();
         vbo = glGenBuffers();
-        ibo = new IndexBuffer(true);
+        ibo = new IndexBuffer(true, true);
 
         glBindVertexArray(vao);
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -186,7 +186,7 @@ public class FastRenderer extends Renderer {
             glBindVertexArray(vao);
             ibo.bind();
 
-            glDrawElements(GL_TRIANGLES, currentIndicesAmount, GL_UNSIGNED_SHORT, 0);
+            glDrawElements(GL_TRIANGLES, currentIndicesAmount, ibo.getType(), 0);
 
             ibo.unbind();
             glBindVertexArray(0);
