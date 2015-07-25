@@ -3,6 +3,7 @@ package himmel.graphics.renderables;
 import himmel.graphics.Shader;
 import himmel.graphics.Texture;
 import himmel.graphics.renderers.Renderer;
+import himmel.graphics.renderers.RenderingSet;
 import himmel.math.*;
 
 import java.util.ArrayList;
@@ -12,20 +13,23 @@ import java.util.List;
  * Created by Igor on 21-May-15.
  */
 public class Renderable {
-    protected float[] vertices;
-    protected float[] normals;
-    protected float[] colors;
-    protected Texture texture;
-    protected short[] indices;
-    //    protected List<Vector2f> uv;
-    protected float[] uv;
-    protected Renderer renderer;
-    protected Shader shader;
-    protected Matrix4f modelMatrix;
+    private float[] vertices;
+    private float[] normals;
+    private float[] colors;
+    private Texture texture;
+    private short[] indices;
+    private float[] uv;
 
-    protected boolean alive = true;
+    private RenderingSet renderingSet;
 
-    public Renderable(float[] vertices, Texture texture, float[] uv, short[] indices, Renderer renderer, Shader shader) {
+    private Matrix4f modelMatrix;
+    private float matrixId;
+
+    private boolean alive = true;
+    private boolean hasChanged = true;
+
+
+    public Renderable(float[] vertices, Texture texture, float[] uv, short[] indices, RenderingSet renderingSet) {
         this.vertices = vertices;
         this.normals = null;
         this.colors = null;
@@ -33,11 +37,10 @@ public class Renderable {
         this.uv = uv;
         this.indices = indices;
 
-        this.renderer = renderer;
-        this.shader = shader;
+        this.renderingSet = renderingSet;
     }
 
-    public Renderable(float[] vertices, float[] normals, Texture texture, float[] uv, short[] indices, Renderer renderer, Shader shader) {
+    public Renderable(float[] vertices, float[] normals, Texture texture, float[] uv, short[] indices, RenderingSet renderingSet) {
         this.vertices = vertices;
         this.normals = normals;
         this.colors = null;
@@ -45,11 +48,10 @@ public class Renderable {
         this.uv = uv;
         this.indices = indices;
 
-        this.renderer = renderer;
-        this.shader = shader;
+        this.renderingSet = renderingSet;
     }
 
-    public Renderable(float[] vertices, float[] colors, short[] indices, Renderer renderer, Shader shader) {
+    public Renderable(float[] vertices, float[] colors, short[] indices, RenderingSet renderingSet) {
         this.vertices = vertices;
         this.normals = null;
         this.colors = colors;
@@ -57,11 +59,10 @@ public class Renderable {
         this.uv = null;
         this.indices = indices;
 
-        this.renderer = renderer;
-        this.shader = shader;
+        this.renderingSet = renderingSet;
     }
 
-    public Renderable(float[] vertices, float[] normals, float[] colors, short[] indices, Renderer renderer, Shader shader) {
+    public Renderable(float[] vertices, float[] normals, float[] colors, short[] indices, RenderingSet renderingSet) {
         this.vertices = vertices;
         this.normals = normals;
         this.colors = colors;
@@ -69,12 +70,19 @@ public class Renderable {
         this.uv = null;
         this.indices = indices;
 
-        this.renderer = renderer;
-        this.shader = shader;
+        this.renderingSet = renderingSet;
+    }
+
+    public void setChanged(boolean changed) {
+        hasChanged = changed;
     }
 
     public void submit(Renderer renderer) {
         renderer.submit(this);
+    }
+
+    public boolean isChanged() {
+        return hasChanged;
     }
 
     public boolean isAlive() {
@@ -87,26 +95,39 @@ public class Renderable {
 
     public void setModelMatrix(Matrix4f matrix) {
         this.modelMatrix = matrix;
+        setChanged(true);
     }
 
     public Matrix4f getModelMatrix() {
         return modelMatrix;
     }
 
-    public Renderer getRenderer() {
-        return renderer;
+    public RenderingSet getRenderingSet() {
+        return renderingSet;
     }
 
-    public Shader getShader() {
-        return shader;
+    // TODO: Decide, whether to avoid it in Text
+    public void setTexture(Texture texture) {
+        this.texture = texture;
+        setChanged(true);
     }
 
     public int getTID() {
         return texture == null ? 0 : texture.getTID();
     }
 
+    public void setIndices(short[] indices) {
+        this.indices = indices;
+    }
+
     public short[] getIndices() {
         return indices;
+    }
+
+    // TODO: decide, whether to keep it
+    public void setVertices(float[] vertices) {
+        this.vertices = vertices;
+        setChanged(true);
     }
 
     public float[] getVertices() {
@@ -117,11 +138,30 @@ public class Renderable {
         return normals;
     }
 
+    public void setColors(float[] colors) {
+        this.colors = colors;
+        setChanged(true);
+    }
+
     public float[] getColors() {
         return colors;
     }
 
+    public void setUV(float[] uv) {
+        this.uv = uv;
+        setChanged(true);
+    }
+
     public float[] getUV() {
         return uv;
+    }
+
+    public float getMid() {
+        return matrixId;
+    }
+
+    public void setMid(float mid) {
+        this.matrixId = mid;
+        setChanged(true);
     }
 }

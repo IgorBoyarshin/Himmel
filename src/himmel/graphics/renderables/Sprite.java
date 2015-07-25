@@ -1,7 +1,9 @@
 package himmel.graphics.renderables;
 
 import himmel.graphics.*;
+import himmel.graphics.renderers.FastRenderer;
 import himmel.graphics.renderers.Renderer;
+import himmel.graphics.renderers.RenderingSet;
 import himmel.math.Vector2f;
 import himmel.math.Vector3f;
 import himmel.math.Vector4f;
@@ -16,25 +18,31 @@ public class Sprite extends Renderable {
     private Vector3f position;
     private Vector2f size;
 
-    public Sprite(Vector3f position, Vector2f size, Vector4f color, Renderer renderer, Shader shader) {
+    private static RenderingSet renderingSet;
+
+    public Sprite(Vector3f position, Vector2f size, Vector4f color) {
         super(convertVertices(position, size),
                 convertColors(color),
                 new short[]{0, 1, 2, 0, 2, 3},
-                renderer, shader);
+                renderingSet);
 
         this.position = position;
         this.size = size;
     }
 
-    public Sprite(Vector3f position, Vector2f size, Texture texture, float[] uv, Renderer renderer, Shader shader) {
+    public Sprite(Vector3f position, Vector2f size, Texture texture, float[] uv) {
         super(convertVertices(position, size),
                 texture,
                 uv,
                 new short[]{0, 1, 2, 0, 2, 3},
-                renderer, shader);
+                renderingSet);
 
         this.position = position;
         this.size = size;
+    }
+
+    public static void setRenderingSet(RenderingSet theRenderingSet) {
+        renderingSet = theRenderingSet;
     }
 
     private float[] getDefaultUvs() {
@@ -49,21 +57,17 @@ public class Sprite extends Renderable {
         }
     }
 
-    public void setTexture(Texture texture) {
-        this.texture = texture;
-    }
-
     public void setNewPosition(Vector3f position) {
-        this.vertices = convertVertices(position, size);
+        setVertices(convertVertices(position, size));
         this.position = position;
     }
 
     public void setUv(float[] uv) {
-        this.uv = uv;
+        setUV(uv);
     }
 
     public void setSize(Vector2f size) {
-        this.vertices = convertVertices(position, size);
+        setVertices(convertVertices(position, size));
         this.size = size;
     }
 
@@ -109,12 +113,12 @@ public class Sprite extends Renderable {
     }
 
     public void setColor(Vector4f color) {
-        this.colors = convertColors(color);
+        setColors(convertColors(color));
     }
 
     public void setColor(float[] colors) {
         if (colors.length == 16) {
-            this.colors = colors;
+            setColors(colors);
         }
     }
 }

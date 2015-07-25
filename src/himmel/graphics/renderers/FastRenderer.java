@@ -29,25 +29,25 @@ public class FastRenderer extends Renderer {
     private ByteBuffer gpuBuffer;
     private List<Integer> textureSlots;
 
-    private final int SHADER_ATTR_VERTEX = 0;
-    private final int SHADER_ATTR_COLOR = 1;
-    private final int SHADER_ATTR_UV = 2;
-    private final int SHADER_ATTR_TID = 3;
+    private static final int SHADER_ATTR_VERTEX = 0;
+    private static final int SHADER_ATTR_COLOR = 1;
+    private static final int SHADER_ATTR_UV = 2;
+    private static final int SHADER_ATTR_TID = 3;
 
-    private final int FLOAT_SIZE_BYTES = 4;
+    private static final int FLOAT_SIZE_BYTES = 4;
 
-    private final int VERTEX_FLOATS_PER_COMPONENT = 3;
-    private final int UV_FLOATS_PER_COMPONENT = 2;
-    private final int TID_FLOATS_PER_COMPONENT = 1;
-    private final int COLOR_FLOATS_PER_COMPONENT = 4;
+    private static final int VERTEX_FLOATS_PER_COMPONENT = 3;
+    private static final int UV_FLOATS_PER_COMPONENT = 2;
+    private static final int TID_FLOATS_PER_COMPONENT = 1;
+    private static final int COLOR_FLOATS_PER_COMPONENT = 4;
 
-    private final int COMPONENT_SIZE_BYTES = FLOAT_SIZE_BYTES *
+    private static final int COMPONENT_SIZE_BYTES = FLOAT_SIZE_BYTES *
             (VERTEX_FLOATS_PER_COMPONENT +
                     UV_FLOATS_PER_COMPONENT +
                     TID_FLOATS_PER_COMPONENT +
                     COLOR_FLOATS_PER_COMPONENT);
-    private final int MAX_VERTICES = 10 * Short.MAX_VALUE;
-    private final int BUFFER_SIZE = COMPONENT_SIZE_BYTES * MAX_VERTICES;
+    private static final int MAX_VERTICES = 16 * Short.MAX_VALUE; // 19MB; ~400000 vertices;
+    private static final int BUFFER_SIZE = COMPONENT_SIZE_BYTES * MAX_VERTICES;
 
     private int currentVerticesAmount;
     private int currentIndicesAmount;
@@ -234,5 +234,9 @@ public class FastRenderer extends Renderer {
 //            System.out.println("Indices: " + currentIndicesAmount);
 //            System.out.println();
         }
+    }
+
+    public static int getBufferSizeInBytes() {
+        return BUFFER_SIZE;
     }
 }

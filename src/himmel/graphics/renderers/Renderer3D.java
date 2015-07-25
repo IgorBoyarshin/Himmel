@@ -3,8 +3,10 @@ package himmel.graphics.renderers;
 import himmel.graphics.buffers.IndexBuffer;
 import himmel.graphics.renderables.Renderable;
 import himmel.math.Vector3f;
+import org.lwjgl.BufferUtils;
 
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,27 +33,35 @@ public class Renderer3D extends Renderer {
     private IndexBuffer ibo;
     private ByteBuffer gpuBuffer;
     private List<Integer> textureSlots;
+    private FloatBuffer matrices;
 
     private final int SHADER_ATTR_VERTEX = 0;
     private final int SHADER_ATTR_NORMAL = 1;
     private final int SHADER_ATTR_COLOR = 2;
     private final int SHADER_ATTR_UV = 3;
     private final int SHADER_ATTR_TID = 4;
+    private final int SHADER_ATTR_MID = 5;
 
     private final int FLOAT_SIZE_BYTES = 4;
 
     private final int VERTEX_FLOATS_PER_COMPONENT = 3;
+    private final int NORMAL_FLOATS_PER_COMPONENT = 3;
+    private final int COLOR_FLOATS_PER_COMPONENT = 4;
     private final int UV_FLOATS_PER_COMPONENT = 2;
     private final int TID_FLOATS_PER_COMPONENT = 1;
-    private final int COLOR_FLOATS_PER_COMPONENT = 4;
+    private final int MID_FLOATS_PER_COMPONENT = 1;
 
     private final int COMPONENT_SIZE_BYTES = FLOAT_SIZE_BYTES *
             (VERTEX_FLOATS_PER_COMPONENT +
+                    NORMAL_FLOATS_PER_COMPONENT +
+                    COLOR_FLOATS_PER_COMPONENT +
                     UV_FLOATS_PER_COMPONENT +
                     TID_FLOATS_PER_COMPONENT +
-                    COLOR_FLOATS_PER_COMPONENT);
-    private final int MAX_VERTICES = 10 * Short.MAX_VALUE;
+                    MID_FLOATS_PER_COMPONENT);
+    private final int MAX_VERTICES = 8 * Short.MAX_VALUE;
     private final int BUFFER_SIZE = COMPONENT_SIZE_BYTES * MAX_VERTICES;
+
+    private final int AMOUNT_OF_MATRICES = 16;
 
     private int currentVerticesAmount;
     private int currentIndicesAmount;
@@ -63,6 +73,7 @@ public class Renderer3D extends Renderer {
 
         init();
         textureSlots = new ArrayList<>();
+        matrices = BufferUtils.createFloatBuffer(AMOUNT_OF_MATRICES * 16);
     }
 
     private void terminate() {

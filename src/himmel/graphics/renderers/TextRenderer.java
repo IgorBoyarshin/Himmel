@@ -201,8 +201,6 @@ public class TextRenderer extends Renderer {
 
 //            System.out.println("Ind " + currentIndicesCount);
 //            System.out.println("Sprite " + currentSpriteCount);
-            currentIndicesCount = 0;
-            currentSpriteCount = 0;
         }
     }
 
@@ -215,6 +213,9 @@ public class TextRenderer extends Renderer {
 //            gpuBuffer = null;
             gpuBuffer = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
 //            System.out.println("Capacity " + gpuBuffer.capacity());
+
+            currentIndicesCount = 0;
+            currentSpriteCount = 0;
         }
     }
 

@@ -3,6 +3,7 @@ package himmel.graphics.layers;
 import himmel.graphics.renderables.Renderable;
 import himmel.graphics.Shader;
 import himmel.graphics.renderers.Renderer;
+import himmel.graphics.renderers.RenderingSet;
 
 import java.util.*;
 
@@ -10,9 +11,11 @@ import java.util.*;
  * Created by Igor on 26-May-15.
  */
 public class Layer {
-
-    private Map<Shader, Map<Renderer, List<Renderable>>> objects;
+    private Map<RenderingSet, List<Renderable>> objects;
     private int count;
+    private boolean reSubmit = true;
+
+    private List<Renderable> renderablesWithMatricesInShader;
 
     public Layer() {
         objects = new HashMap<>();
@@ -21,52 +24,59 @@ public class Layer {
 
     public void add(Renderable renderable) {
         count++;
-        Shader shader = renderable.getShader();
-        Renderer renderer = renderable.getRenderer();
+        RenderingSet renderingSet = renderable.getRenderingSet();
 
-        if (!objects.containsKey(shader)) {
-            Map<Renderer, List<Renderable>> map = new HashMap<>();
+        if (!objects.containsKey(renderingSet)) {
             List<Renderable> renderables = new ArrayList<>();
 
             renderables.add(renderable);
-            map.put(renderer, renderables);
-            objects.put(shader, map);
+            objects.put(renderingSet, renderables);
         } else {
-            Map<Renderer, List<Renderable>> map = objects.get(shader);
-            if (!map.containsKey(renderer)) {
-                List<Renderable> renderables = new ArrayList<>();
+            objects.get(renderingSet).add(renderable);
+        }
+    }
 
-                renderables.add(renderable);
-                map.put(renderer, renderables);
-            } else {
-                List<Renderable> renderables = map.get(renderer);
-
-                renderables.add(renderable);
+    public void update() {
+        for (RenderingSet renderingSet : objects.keySet()) {
+            for (Renderable renderable : objects.get(renderingSet)) {
+                if (renderable.isChanged()) {
+                    reSubmit = true;
+                    return;
+                }
             }
         }
     }
 
-    public void render() {
-        Set<Shader> setShader = objects.keySet();
-        for (Shader shader : setShader) {
-            Map<Renderer, List<Renderable>> map = objects.get(shader);
-            Set<Renderer> setRenderer = map.keySet();
-            shader.enable();
-            for (Renderer renderer : setRenderer) {
-                List<Renderable> renderables = map.get(renderer);
+    public void submit() {
+        if (reSubmit) {
+            for (RenderingSet renderingSet : objects.keySet()) {
+                Shader shader = renderingSet.getShader();
+                Renderer renderer = renderingSet.getRenderer();
+
+                shader.enable();
                 renderer.begin();
-                for (Renderable renderable : renderables) {
-//                    renderer.push(renderable.getModelMatrix());
+                for (Renderable renderable : objects.get(renderingSet)) {
                     if (renderable.isAlive()) {
                         renderable.submit(renderer);
-                    } else{
-                        renderables.remove(renderable);
+                        renderable.setChanged(false);
+                    } else {
+                        objects.get(renderingSet).remove(renderable);
                     }
-//                    renderer.pop();
                 }
                 renderer.end();
-                renderer.render();
             }
+
+            reSubmit = false;
+        }
+    }
+
+    public void render() {
+        for (RenderingSet renderingSet : objects.keySet()) {
+            Shader shader = renderingSet.getShader();
+            Renderer renderer = renderingSet.getRenderer();
+
+            shader.enable();
+            renderer.render();
         }
     }
 

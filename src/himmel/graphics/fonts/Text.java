@@ -3,6 +3,7 @@ package himmel.graphics.fonts;
 import himmel.graphics.renderables.Renderable;
 import himmel.graphics.Shader;
 import himmel.graphics.renderers.Renderer;
+import himmel.graphics.renderers.RenderingSet;
 import himmel.graphics.renderers.TextRenderer;
 import himmel.math.Matrix4f;
 import himmel.math.Vector2f;
@@ -34,42 +35,43 @@ public class Text extends Renderable {
 
     private static Font font;
     //    private static Font font = new Font("src//himmel//resources//FontCalibri");
-    private static Renderer textRenderer = new TextRenderer();
-    private static Shader shader;
+//    private static Renderer textRenderer = new TextRenderer();
+//    private static Shader shader;
+    private static RenderingSet renderingSet;
 
     public Text(String text, Vector4f mainColor) {
-        super(null, null, null, textRenderer, shader);
+        super(null, null, null, renderingSet);
         this.text = text;
         this.color = mainColor;
-        modelMatrix = Matrix4f.identity();
+        setModelMatrix(Matrix4f.identity());
         checkAndSetFontSize(DEFAULT_FONT_SIZE);
         compileSentence(text);
     }
 
     public Text(String text, int fontSize, Vector4f mainColor) {
-        super(null, null, null, textRenderer, shader);
+        super(null, null, null, renderingSet);
         this.text = text;
         this.color = mainColor;
-        modelMatrix = Matrix4f.identity();
+        setModelMatrix(Matrix4f.identity());
         checkAndSetFontSize(fontSize);
         compileSentence(text);
     }
 
-    public Text(String text, Vector4f color, int fontSize, Shader shader) {
-        super(null, null, null, textRenderer, shader);
+    public Text(String text, Vector4f color, int fontSize) {
+        super(null, null, null, renderingSet);
         this.text = text;
         this.color = color;
-        modelMatrix = Matrix4f.identity();
+        setModelMatrix(Matrix4f.identity());
         checkAndSetFontSize(fontSize);
         compileSentence(text);
     }
 
-    public Text(String text, int fontSize, Shader shader) {
-        super(null, null, null, textRenderer, shader);
+    public Text(String text, int fontSize) {
+        super(null, null, null, renderingSet);
 //        font = new Font("src//himmel//resources//FontCalibri");
         this.text = text;
         color = new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
-        modelMatrix = Matrix4f.identity();
+        setModelMatrix(Matrix4f.identity());
         checkAndSetFontSize(fontSize);
         compileSentence(text);
     }
@@ -92,12 +94,12 @@ public class Text extends Renderable {
         font = theFont;
     }
 
-    public static void setShader(Shader newShader) {
-        shader = newShader;
+    public static void setRenderingSet(RenderingSet theRenderingSet) {
+        renderingSet = theRenderingSet;
     }
 
     public void transform(Matrix4f model) {
-        this.modelMatrix = model;
+        setModelMatrix(model);
         recalculateVertices();
     }
 
@@ -105,15 +107,16 @@ public class Text extends Renderable {
         float height = FILE_SIZE;
         float sizeX = 0.0f;
         float sizeY = text.length() == 0 ? 0.0f : fontSize * font.getCharacterSize(text.charAt(0)).y / height;
+        float[] vertices = new float[12 * text.length()];
         for (int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
             Vector2f size = font.getCharacterSize(c);
 
             // Vertices
-            Vector3f pos1 = modelMatrix.multiply(new Vector3f(sizeX, 0.0f, 0.0f));
-            Vector3f pos2 = modelMatrix.multiply(new Vector3f(sizeX, sizeY, 0.0f));
-            Vector3f pos3 = modelMatrix.multiply(new Vector3f(sizeX + fontSize * size.x / height, sizeY, 0.0f));
-            Vector3f pos4 = modelMatrix.multiply(new Vector3f(sizeX + fontSize * size.x / height, 0.0f, 0.0f));
+            Vector3f pos1 = getModelMatrix().multiply(new Vector3f(sizeX, 0.0f, 0.0f));
+            Vector3f pos2 = getModelMatrix().multiply(new Vector3f(sizeX, sizeY, 0.0f));
+            Vector3f pos3 = getModelMatrix().multiply(new Vector3f(sizeX + fontSize * size.x / height, sizeY, 0.0f));
+            Vector3f pos4 = getModelMatrix().multiply(new Vector3f(sizeX + fontSize * size.x / height, 0.0f, 0.0f));
 
             vertices[12 * i + 0] = pos1.x;
             vertices[12 * i + 1] = pos1.y;
@@ -133,15 +136,17 @@ public class Text extends Renderable {
 
             sizeX += fontSize * size.x / height;
         }
+
+        setVertices(vertices);
     }
 
     private void compileSentence(String text) {
         int length = text.length();
-        vertices = new float[4 * 3 * length];
-        indices = new short[6 * length];
-        colors = new float[4];
-        uv = new float[4 * 2 * length];
-        texture = font.getTexture();
+        float[] vertices = new float[4 * 3 * length];
+        short[] indices = new short[6 * length];
+        float[] colors = new float[4];
+        float[] uv = new float[8 * length];
+        setTexture(font.getTexture());
         float height = FILE_SIZE;
         float sizeX = 0.0f;
         float sizeY = text.length() == 0 ? 0.0f : fontSize * font.getCharacterSize(text.charAt(0)).y / height;
@@ -153,20 +158,20 @@ public class Text extends Renderable {
             Vector2f size = font.getCharacterSize(c);
 
             // UV
-            uv[i*8 + 0] = parameter.x / height;
-            uv[i*8 + 1] = parameter.w / height;
-            uv[i*8 + 2] = parameter.x / height;
-            uv[i*8 + 3] = parameter.y / height;
-            uv[i*8 + 4] = parameter.z / height;
-            uv[i*8 + 5] = parameter.y / height;
-            uv[i*8 + 6] = parameter.z / height;
-            uv[i*8 + 7] = parameter.w / height;
+            uv[i * 8 + 0] = parameter.x / height;
+            uv[i * 8 + 1] = parameter.w / height;
+            uv[i * 8 + 2] = parameter.x / height;
+            uv[i * 8 + 3] = parameter.y / height;
+            uv[i * 8 + 4] = parameter.z / height;
+            uv[i * 8 + 5] = parameter.y / height;
+            uv[i * 8 + 6] = parameter.z / height;
+            uv[i * 8 + 7] = parameter.w / height;
 
             // Vertices
-            Vector3f pos1 = modelMatrix.multiply(new Vector3f(sizeX, 0.0f, 0.0f));
-            Vector3f pos2 = modelMatrix.multiply(new Vector3f(sizeX, sizeY, 0.0f));
-            Vector3f pos3 = modelMatrix.multiply(new Vector3f(sizeX + fontSize * size.x / height, sizeY, 0.0f));
-            Vector3f pos4 = modelMatrix.multiply(new Vector3f(sizeX + fontSize * size.x / height, 0.0f, 0.0f));
+            Vector3f pos1 = getModelMatrix().multiply(new Vector3f(sizeX, 0.0f, 0.0f));
+            Vector3f pos2 = getModelMatrix().multiply(new Vector3f(sizeX, sizeY, 0.0f));
+            Vector3f pos3 = getModelMatrix().multiply(new Vector3f(sizeX + fontSize * size.x / height, sizeY, 0.0f));
+            Vector3f pos4 = getModelMatrix().multiply(new Vector3f(sizeX + fontSize * size.x / height, 0.0f, 0.0f));
 
             vertices[12 * i + 0] = pos1.x;
             vertices[12 * i + 1] = pos1.y;
@@ -201,6 +206,11 @@ public class Text extends Renderable {
         colors[1] = color.y;
         colors[2] = color.z;
         colors[3] = color.w;
+
+        setVertices(vertices);
+        setIndices(indices);
+        setColors(colors);
+        setUV(uv);
     }
 
     public void setText(String newText) {
