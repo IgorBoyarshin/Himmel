@@ -23,6 +23,10 @@ public class Renderable {
     private RenderingSet renderingSet;
 
     private Matrix4f modelMatrix;
+
+    // -1.0f === asking the Renderer to add this matrix to the shader
+    // 0.0f === calculate on CPU
+    // >0.0f === the is an ID assigned to use with shader
     private float matrixId;
 
     private boolean alive = true;

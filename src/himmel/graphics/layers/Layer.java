@@ -11,11 +11,9 @@ import java.util.*;
  * Created by Igor on 26-May-15.
  */
 public class Layer {
-    private Map<RenderingSet, List<Renderable>> objects;
-    private int count;
-    private boolean reSubmit = true;
-
-    private List<Renderable> renderablesWithMatricesInShader;
+    protected Map<RenderingSet, List<Renderable>> objects;
+    protected int count;
+    protected boolean reSubmit = true;
 
     public Layer() {
         objects = new HashMap<>();

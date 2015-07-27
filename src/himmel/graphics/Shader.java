@@ -80,6 +80,10 @@ public class Shader {
         glUniformMatrix4fv(getUniform(name), false, matrix.toFloatBuffer());
     }
 
+    public void setUniformMat4fv(String name, FloatBuffer matrices) {
+        glUniformMatrix4fv(getUniform(name), false, matrices);
+    }
+
     public void enable() {
         glUseProgram(ID);
     }

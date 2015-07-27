@@ -1,5 +1,6 @@
 package himmel.graphics;
 
+import himmel.math.Matrix4f;
 import himmel.math.Vector3f;
 
 /**
@@ -20,6 +21,13 @@ public class Camera {
         this.cameraPosition = position;
         this.pitch = pitch;
         this.yaw = yaw;
+    }
+
+    public Matrix4f getMatrix() {
+        return new Matrix4f(1.0f)
+                .multiply(Matrix4f.rotation(yaw, 0.0f, 1.0f, 0.0f))
+                .multiply(Matrix4f.rotation(pitch, 1.0f, 0.0f, 0.0f))
+                .multiply(Matrix4f.translation(cameraPosition));
     }
 
     // TODO

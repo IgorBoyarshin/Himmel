@@ -123,7 +123,11 @@ public class Window {
 
     // Changed center
     public Vector2f getMousePos() {
-        return new Vector2f(mouse.dx, HEIGHT - mouse.dy);
+        return new Vector2f(mouse.dx, mouse.dy);
+    }
+
+    public void resetMousePos(float resetPosX, float resetPosY) {
+        mouse.reset(glfwWindow, resetPosX, resetPosY);
     }
 
     public void clear() {

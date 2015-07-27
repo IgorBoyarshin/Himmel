@@ -2,6 +2,7 @@ package himmel.graphics.renderers;
 
 import himmel.graphics.buffers.IndexBuffer;
 import himmel.graphics.renderables.Renderable;
+import himmel.math.Matrix4f;
 import himmel.math.Vector3f;
 import org.lwjgl.BufferUtils;
 
@@ -58,10 +59,11 @@ public class Renderer3D extends Renderer {
                     UV_FLOATS_PER_COMPONENT +
                     TID_FLOATS_PER_COMPONENT +
                     MID_FLOATS_PER_COMPONENT);
-    private final int MAX_VERTICES = 8 * Short.MAX_VALUE;
+    private final int MAX_VERTICES = 12 * Short.MAX_VALUE;
     private final int BUFFER_SIZE = COMPONENT_SIZE_BYTES * MAX_VERTICES;
 
-    private final int AMOUNT_OF_MATRICES = 16;
+    public static final int AMOUNT_OF_MATRICES = 16;
+    private int currentAmountOfMatrices = 0;
 
     private int currentVerticesAmount;
     private int currentIndicesAmount;
@@ -92,14 +94,18 @@ public class Renderer3D extends Renderer {
         glBufferData(GL_ARRAY_BUFFER, BUFFER_SIZE, null, GL_DYNAMIC_DRAW);
 
         glEnableVertexAttribArray(SHADER_ATTR_VERTEX);
+        glEnableVertexAttribArray(SHADER_ATTR_NORMAL);
         glEnableVertexAttribArray(SHADER_ATTR_COLOR);
         glEnableVertexAttribArray(SHADER_ATTR_UV);
         glEnableVertexAttribArray(SHADER_ATTR_TID);
+        glEnableVertexAttribArray(SHADER_ATTR_MID);
 
         glVertexAttribPointer(SHADER_ATTR_VERTEX, 3, GL_FLOAT, false, COMPONENT_SIZE_BYTES, 0);
-        glVertexAttribPointer(SHADER_ATTR_COLOR, 4, GL_FLOAT, false, COMPONENT_SIZE_BYTES, 12);
-        glVertexAttribPointer(SHADER_ATTR_UV, 2, GL_FLOAT, false, COMPONENT_SIZE_BYTES, 12 + 16);
-        glVertexAttribPointer(SHADER_ATTR_TID, 1, GL_FLOAT, false, COMPONENT_SIZE_BYTES, 12 + 16 + 8);
+        glVertexAttribPointer(SHADER_ATTR_NORMAL, 3, GL_FLOAT, false, COMPONENT_SIZE_BYTES, 12);
+        glVertexAttribPointer(SHADER_ATTR_COLOR, 4, GL_FLOAT, false, COMPONENT_SIZE_BYTES, 12 + 12);
+        glVertexAttribPointer(SHADER_ATTR_UV, 2, GL_FLOAT, false, COMPONENT_SIZE_BYTES, 12 + 12 + 16);
+        glVertexAttribPointer(SHADER_ATTR_TID, 1, GL_FLOAT, false, COMPONENT_SIZE_BYTES, 12 + 12 + 16 + 8);
+        glVertexAttribPointer(SHADER_ATTR_MID, 1, GL_FLOAT, false, COMPONENT_SIZE_BYTES, 12 + 12 + 16 + 8 + 4);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
@@ -109,18 +115,19 @@ public class Renderer3D extends Renderer {
     public void submit(Renderable renderable) {
         if (filling) {
             float[] vertices = renderable.getVertices();
+            float[] normals = renderable.getNormals();
             float[] colors = renderable.getColors();
             float[] uv = renderable.getUV();
             int tid = renderable.getTID();
+            float mid = renderable.getMid();
+
+            Matrix4f modelMatrix = renderable.getModelMatrix();
             short[] indices = renderable.getIndices();
 
             final int size = vertices.length / 3;
 
             if (currentVerticesAmount + size >= MAX_VERTICES) {
-                // flush
-                end();
-                render();
-                begin();
+                // TODO: Was 'flush' before, but now do nothing probably. Just print that the buffer is overflowed
             }
 
             // Indices
@@ -135,6 +142,7 @@ public class Renderer3D extends Renderer {
             currentVerticesAmount += size;
             currentIndicesAmount += indices.length;
 
+            // Texture
             float ts = 0.0f;
             if (tid > 0) {
                 boolean found = false;
@@ -154,27 +162,41 @@ public class Renderer3D extends Renderer {
                     }
                     textureSlots.add(tid);
                     ts = (float) textureSlots.size();
-//                    System.out.println("t:" + tid + " " + ts);
                 }
             } else {
                 // render with colors
             }
 
-//            List<Vector3f> transformedVertices = new ArrayList<>();
-//            for (int i = 0; i < size; i++) {
-//                transformedVertices.add(transformationStackCash.multiply(
-//                        new Vector3f(vertices[3 * i + 0], vertices[3 * i + 1], vertices[3 * i + 2])));
-////                transformedVertices.add(new Vector3f(vertices[3 * i + 0], vertices[3 * i + 1], vertices[3 * i + 2]));
-//            }
-
             for (int i = 0; i < size; i++) {
-//                Vector3f vertex = transformedVertices.get(i);
-                Vector3f vertex = transformationStackCash.multiply(
-                        new Vector3f(vertices[3 * i + 0], vertices[3 * i + 1], vertices[3 * i + 2]));
+                // TODO: previously here was transformation stack
+                if (mid > 0.0f) {
+                    gpuBuffer.putFloat(vertices[3 * i + 0]);
+                    gpuBuffer.putFloat(vertices[3 * i + 1]);
+                    gpuBuffer.putFloat(vertices[3 * i + 2]);
+                } else {
+                    if (modelMatrix == null) {
+                        gpuBuffer.putFloat(vertices[3 * i + 0]);
+                        gpuBuffer.putFloat(vertices[3 * i + 1]);
+                        gpuBuffer.putFloat(vertices[3 * i + 2]);
+                    } else {
+                        Vector3f vertex = modelMatrix.multiply(vertices[3 * i + 0], vertices[3 * i + 1], vertices[3 * i + 2]);
 
-                gpuBuffer.putFloat(vertex.x);
-                gpuBuffer.putFloat(vertex.y);
-                gpuBuffer.putFloat(vertex.z);
+                        gpuBuffer.putFloat(vertex.x);
+                        gpuBuffer.putFloat(vertex.y);
+                        gpuBuffer.putFloat(vertex.z);
+                    }
+                }
+
+                // TODO: how should I treat normals???
+                if (normals == null) {
+                    gpuBuffer.putFloat(0.0f);
+                    gpuBuffer.putFloat(0.0f);
+                    gpuBuffer.putFloat(0.0f);
+                } else {
+                    gpuBuffer.putFloat(normals[3 * i + 0]);
+                    gpuBuffer.putFloat(normals[3 * i + 1]);
+                    gpuBuffer.putFloat(normals[3 * i + 2]);
+                }
 
                 gpuBuffer.putFloat(colors[4 * i + 0]);
                 gpuBuffer.putFloat(colors[4 * i + 1]);
@@ -190,6 +212,16 @@ public class Renderer3D extends Renderer {
                 }
 
                 gpuBuffer.putFloat(ts);
+                gpuBuffer.putFloat(mid);
+            }
+
+            // Matrix
+            // We do it after the cycle so that the new matrix gets submitted next time
+            if (mid == -1.0f) {
+                if (currentAmountOfMatrices < AMOUNT_OF_MATRICES) {
+                    currentAmountOfMatrices++;
+                    mid = currentAmountOfMatrices * 1.0f;
+                }
             }
         }
     }

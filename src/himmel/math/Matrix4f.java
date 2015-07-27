@@ -48,7 +48,7 @@ public class Matrix4f {
         return result;
     }
 
-    public static Matrix4f perspective(final int WINDOW_WIDTH, final int WINDOW_HEIGHT,
+    public static Matrix4f perspective(final float WINDOW_WIDTH, final float WINDOW_HEIGHT,
                                        float fFovDeg, float fzNear, float fzFar) {
         Matrix4f result = new Matrix4f(1.0f);
 
@@ -56,7 +56,7 @@ public class Matrix4f {
         float fFovRad = fFovDeg * degToRad;
         float fFrustumScale = 1.0f / (float) Math.tan(fFovRad / 2.0f);
 
-        result.matrix[0] = fFrustumScale / (WINDOW_WIDTH * 1.0f / (float) WINDOW_HEIGHT);
+        result.matrix[0] = fFrustumScale / (WINDOW_WIDTH / WINDOW_HEIGHT);
         result.matrix[5] = fFrustumScale;
         result.matrix[10] = (fzFar + fzNear) / (fzNear - fzFar);
         result.matrix[14] = (2 * fzFar * fzNear) / (fzNear - fzFar);

@@ -10,10 +10,10 @@ import static org.lwjgl.glfw.GLFW.glfwSetCursorPos;
 public class InputMouse extends GLFWCursorPosCallback {
     public float dx, dy;
 
-    public void reset(long window) {
-        glfwSetCursorPos(window, 0.0d, 0.0d);
-        dx = 0.0f;
-        dy = 0.0f;
+    public void reset(long window, float middleX, float middleY) {
+        glfwSetCursorPos(window, middleX, middleY);
+        dx = middleX;
+        dy = middleY;
     }
 
     @Override
