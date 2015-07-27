@@ -10,6 +10,7 @@ public class Camera {
     private Vector3f cameraPosition;
     private float pitch; // tangazh
     private float yaw; // riskanie
+    private float roll; // kren
 
     public Camera(Vector3f position) {
         this.cameraPosition = position;
@@ -17,7 +18,7 @@ public class Camera {
         this.yaw = 0.0f;
     }
 
-    public Camera(Vector3f position, float pitch, float yaw) {
+    public Camera(Vector3f position, float pitch, float yaw, float roll) {
         this.cameraPosition = position;
         this.pitch = pitch;
         this.yaw = yaw;
@@ -26,7 +27,7 @@ public class Camera {
     public Matrix4f getMatrix() {
         return new Matrix4f(1.0f)
                 .multiply(Matrix4f.rotation(yaw, 0.0f, 1.0f, 0.0f))
-                .multiply(Matrix4f.rotation(pitch, 1.0f, 0.0f, 0.0f))
+//                .multiply(Matrix4f.rotation(pitch, 1.0f, 0.0f, 0.0f))
                 .multiply(Matrix4f.translation(cameraPosition));
     }
 
@@ -53,6 +54,14 @@ public class Camera {
 
     public void setPitch(float pitch) {
         this.pitch = pitch;
+    }
+
+    public void setRoll(float roll) {
+        this.roll = roll;
+    }
+
+    public float getRoll() {
+        return roll;
     }
 
     public float getYaw() {
