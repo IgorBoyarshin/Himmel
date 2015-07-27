@@ -39,10 +39,15 @@ public class Layer {
             for (Renderable renderable : objects.get(renderingSet)) {
                 if (renderable.isChanged()) {
                     reSubmit = true;
-                    return;
+                    break;
                 }
             }
+            if (reSubmit) {
+                break;
+            }
         }
+
+        submit();
     }
 
     public void submit() {
