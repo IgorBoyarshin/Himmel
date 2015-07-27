@@ -25,9 +25,11 @@ public class Camera {
     }
 
     public Matrix4f getMatrix() {
+        float sum = pitch + yaw + roll;
         return new Matrix4f(1.0f)
-                .multiply(Matrix4f.rotation(yaw, 0.0f, 1.0f, 0.0f))
+//                .multiply(Matrix4f.rotation(yaw, 0.0f, 1.0f, 0.0f))
 //                .multiply(Matrix4f.rotation(pitch, 1.0f, 0.0f, 0.0f))
+                .multiply(Matrix4f.rotation(sum, pitch / sum, yaw / sum, roll / sum))
                 .multiply(Matrix4f.translation(cameraPosition));
     }
 
@@ -49,14 +51,32 @@ public class Camera {
 
 
     public void setYaw(float yaw) {
+        if (yaw >= 360.0f) {
+            yaw -= 360.0f;
+        }
+        if (yaw < 0.0f) {
+            yaw += 360.0f;
+        }
         this.yaw = yaw;
     }
 
     public void setPitch(float pitch) {
+        if (pitch >= 360.0f) {
+            pitch -= 360.0f;
+        }
+        if (pitch < 0.0f) {
+            pitch += 360.0f;
+        }
         this.pitch = pitch;
     }
 
     public void setRoll(float roll) {
+        if (roll >= 360.0f) {
+            roll -= 360.0f;
+        }
+        if (roll < 0.0f) {
+            roll += 360.0f;
+        }
         this.roll = roll;
     }
 
