@@ -31,7 +31,7 @@ public abstract class Camera implements Matrixable{
 
     public abstract void attachTo(Matrixable object);
 
-    public abstract void move(Vector3f direction, float length);
+    public abstract void move(Direction direction, float length);
 
     public void setYaw(float yaw) {
         if (yaw >= 360.0f) {
