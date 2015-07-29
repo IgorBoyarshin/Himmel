@@ -141,7 +141,7 @@ public class Matrix4f {
     }
 
     public Matrix4f rotate(float angle, float x, float y, float z) {
-        this.matrix = rotation(angle, x, y, z).matrix;
+        this.matrix = this.multiply(rotation(angle, x, y, z)).matrix;
         return this;
     }
 
