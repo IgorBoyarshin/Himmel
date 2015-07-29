@@ -30,6 +30,7 @@ public class Window {
 
     private final boolean RESIZABLE = false;
     private final boolean FULLSCREEN;
+    private final boolean WIREFRAME;
     private final int SWAP_INTERWAL;
     private final boolean LOG_INFO;
     private final AntiAliasing ANTI_ALIASING;
@@ -40,13 +41,14 @@ public class Window {
     public static final AntiAliasing ANTI_ALIASING_8X = AntiAliasing.ANTI_ALIASING_8X;
 
     public Window(String title, int width, int height, AntiAliasing antiAliasing, boolean vsync, boolean fullscreen,
-                  boolean log) {
+                  boolean wireframe, boolean log) {
         this.TITLE = title;
         this.WIDTH = width;
         this.HEIGHT = height;
         this.ANTI_ALIASING = antiAliasing;
         this.SWAP_INTERWAL = vsync ? 1 : 0;
         this.FULLSCREEN = fullscreen;
+        this.WIREFRAME = wireframe;
         this.LOG_INFO = log;
 
         if (LOG_INFO) {
@@ -73,6 +75,7 @@ public class Window {
         this.ANTI_ALIASING = AntiAliasing.ANTI_ALIASING_OFF;
         this.SWAP_INTERWAL = 1;
         this.FULLSCREEN = false;
+        this.WIREFRAME = false;
         this.LOG_INFO = false;
 
         if (LOG_INFO) {
@@ -197,6 +200,11 @@ public class Window {
         glEnable(GL_BLEND);
         glEnable(GL_MULTISAMPLE);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        if (WIREFRAME) {
+            glPolygonMode(GL_FRONT, GL_LINE);
+            glPolygonMode(GL_BACK, GL_LINE);
+        }
 
         clearColor(new Vector4f(0.0f, 0.0f, 0.0f, 1.0f));
 
