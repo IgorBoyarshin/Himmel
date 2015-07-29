@@ -1,54 +1,37 @@
-package himmel.graphics;
+package himmel.graphics.camera;
 
+import himmel.graphics.Matrixable;
 import himmel.math.Matrix4f;
 import himmel.math.Vector3f;
 
 /**
  * Created by Igor on 20-Jul-15.
  */
-public class Camera {
-    private Vector3f cameraPosition;
-    private float pitch; // tangazh
-    private float yaw; // riskanie
-    private float roll; // kren
+public abstract class Camera implements Matrixable{
+    protected Vector3f cameraPosition;
+    protected float pitch; // tangazh
+    protected float yaw; // riskanie
+    protected float roll; // kren
 
     public Camera(Vector3f position) {
         this.cameraPosition = position;
         this.pitch = 0.0f;
         this.yaw = 0.0f;
+        this.roll = 0.0f;
     }
 
     public Camera(Vector3f position, float pitch, float yaw, float roll) {
         this.cameraPosition = position;
         this.pitch = pitch;
         this.yaw = yaw;
+        this.roll = roll;
     }
 
-    public Matrix4f getMatrix() {
-        float sum = pitch + yaw + roll;
-        return new Matrix4f(1.0f)
-//                .multiply(Matrix4f.rotation(yaw, 0.0f, 1.0f, 0.0f))
-//                .multiply(Matrix4f.rotation(pitch, 1.0f, 0.0f, 0.0f))
-                .multiply(Matrix4f.rotation(sum, pitch / sum, yaw / sum, roll / sum))
-                .multiply(Matrix4f.translation(cameraPosition));
-    }
+    public abstract Matrix4f getViewMatrix();
 
-    // TODO
-    // Parameter: Object
-    public void attachTo() {
+    public abstract void attachTo(Matrixable object);
 
-    }
-
-    // TODO
-    public void move(Vector3f direction, float length) {
-
-    }
-
-    // TODO
-    public Vector3f getDirection() {
-        return null;
-    }
-
+    public abstract void move(Vector3f direction, float length);
 
     public void setYaw(float yaw) {
         if (yaw >= 360.0f) {
@@ -92,17 +75,17 @@ public class Camera {
         return pitch;
     }
 
-    public void setNewPosition(Vector3f position) {
+    public void setPosition(Vector3f position) {
         this.cameraPosition = position;
+    }
+
+    public Vector3f getPosition() {
+        return cameraPosition;
     }
 
     public void shift(Vector3f shift) {
         this.cameraPosition.x += shift.x;
         this.cameraPosition.y += shift.y;
         this.cameraPosition.z += shift.z;
-    }
-
-    public Vector3f getPosition() {
-        return cameraPosition;
     }
 }
