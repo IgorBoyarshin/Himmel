@@ -95,8 +95,11 @@ public class Window {
         }
     }
 
-    public void update() {
+    public void pollEvents() {
         glfwPollEvents();
+    }
+
+    public void swapBuffers() {
         glfwSwapBuffers(glfwWindow);
     }
 
