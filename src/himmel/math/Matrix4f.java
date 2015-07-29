@@ -99,16 +99,18 @@ public class Matrix4f {
                 result.matrix[x + y * 4] = sum;
             }
         }
-//        this.matrix = result.matrix;
+        this.matrix = result.matrix;
 
         return result;
     }
 
     public Matrix4f scale(Vector3f vector) {
-        matrix[0 + 0 * 4] *= vector.x;
-        matrix[1 + 1 * 4] *= vector.y;
-        matrix[2 + 2 * 4] *= vector.z;
+//        matrix[0 + 0 * 4] *= vector.x;
+//        matrix[1 + 1 * 4] *= vector.y;
+//        matrix[2 + 2 * 4] *= vector.z;
+//        return this;
 
+        this.matrix = this.multiply(scaling(vector)).matrix;
         return this;
     }
 
@@ -123,10 +125,13 @@ public class Matrix4f {
     }
 
     public Matrix4f translate(Vector3f vector) {
-        matrix[0 + 3 * 4] += vector.x;
-        matrix[1 + 3 * 4] += vector.y;
-        matrix[2 + 3 * 4] += vector.z;
+//        matrix[0 + 3 * 4] += vector.x;
+//        matrix[1 + 3 * 4] += vector.y;
+//        matrix[2 + 3 * 4] += vector.z;
+//
+//        return this;
 
+        this.matrix = this.multiply(translation(vector)).matrix;
         return this;
     }
 
