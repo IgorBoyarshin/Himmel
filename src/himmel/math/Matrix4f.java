@@ -175,6 +175,43 @@ public class Matrix4f {
         return result;
     }
 
+    public Matrix4f rotateAboutAxis(float angle, Vector3f axis) {
+        this.matrix = this.multiply(rotationAaboutAxis(angle, axis)).matrix;
+        return this;
+    }
+
+    /**
+     * Angle in Degrees
+     */
+    public static Matrix4f rotationAaboutAxis(float angle, Vector3f axis) {
+        Matrix4f result = identity();
+
+        final float r = (float) toRadians(angle);
+        final float argument = r / 2.0f;
+        final float q0 = (float) cos(argument);
+        final float q1 = (float) sin(argument) * axis.x;
+        final float q2 = (float) sin(argument) * axis.y;
+        final float q3 = (float) sin(argument) * axis.z;
+        final float q02 = q0 * q0;
+        final float q12 = q1 * q1;
+        final float q22 = q2 * q2;
+        final float q32 = q3 * q3;
+
+        result.matrix[0 + 0 * 4] = q02 + q12 - q22 - q32;
+        result.matrix[1 + 0 * 4] = 2.0f * (q2 * q1 + q0 * q3);
+        result.matrix[2 + 0 * 4] = 2.0f * (q3 * q1 - q0 * q2);
+
+        result.matrix[0 + 1 * 4] = 2.0f * (q1 * q2 - q0 * q3);
+        result.matrix[1 + 1 * 4] = q02 - q12 + q22 - q32;
+        result.matrix[2 + 1 * 4] = 2.0f * (q3 * q2 + q0 * q1);
+
+        result.matrix[0 + 2 * 4] = 2.0f * (q1 * q3 + q0 * q2);
+        result.matrix[1 + 2 * 4] = 2.0f * (q2 * q3 - q0 * q1);
+        result.matrix[2 + 2 * 4] = q02 - q12 - q22 + q32;
+
+        return result;
+    }
+
     public FloatBuffer toFloatBuffer() {
         FloatBuffer buffer = BufferUtils.createFloatBuffer(matrix.length);
         buffer.put(matrix);
