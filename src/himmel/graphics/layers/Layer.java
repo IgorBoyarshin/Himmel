@@ -4,6 +4,7 @@ import himmel.graphics.renderables.Renderable;
 import himmel.graphics.Shader;
 import himmel.graphics.renderers.Renderer;
 import himmel.graphics.renderers.RenderingSet;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.*;
 
@@ -61,8 +62,8 @@ public class Layer {
                 renderer.begin();
                 for (Renderable renderable : objects.get(renderingSet)) {
                     if (renderable.isAlive()) {
-                        renderable.submit(renderer);
                         renderable.setChanged(false);
+                        renderable.submit(renderer);
                     } else {
                         objects.get(renderingSet).remove(renderable);
                     }

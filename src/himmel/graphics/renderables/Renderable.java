@@ -100,11 +100,14 @@ public class Renderable implements Matrixable{
 
     public void die() {
         alive = false;
+        setChanged(true);
     }
 
     public void setModelMatrix(Matrix4f matrix) {
         this.modelMatrix = matrix;
-        setChanged(true);
+        if (matrixId <= 0.0f) {
+            setChanged(true);
+        }
     }
 
     public Matrix4f getModelMatrix() {
