@@ -15,7 +15,7 @@ public class InputKeyboard extends GLFWKeyCallback {
 
     @Override
     public void invoke(long window, int key, int scancode, int action, int mods) {
-        if (key >= AMOUNT_OF_KEYS) {
+        if (key >= AMOUNT_OF_KEYS || key < 0) {
             System.out.println("RUNTIME ERROR:");
             System.out.println("In InputKeyboard class:");
             System.out.println("Key " + key + " is our of bounds of the array");
