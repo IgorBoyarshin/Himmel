@@ -220,7 +220,7 @@ public class Renderer3D extends Renderer {
             if (mid == -1.0f) {
                 if (currentAmountOfMatrices < AMOUNT_OF_MATRICES) {
                     currentAmountOfMatrices++;
-                    mid = currentAmountOfMatrices * 1.0f;
+                    renderable.setMid(currentAmountOfMatrices * 1.0f);
                 }
             }
         }

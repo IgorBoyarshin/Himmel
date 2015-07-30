@@ -22,6 +22,7 @@ public class Layer {
 
     public void add(Renderable renderable) {
         count++;
+        reSubmit = true;
         RenderingSet renderingSet = renderable.getRenderingSet();
 
         if (!objects.containsKey(renderingSet)) {
@@ -50,7 +51,7 @@ public class Layer {
         submit();
     }
 
-    public void submit() {
+    protected void submit() {
         if (reSubmit) {
             for (RenderingSet renderingSet : objects.keySet()) {
                 Shader shader = renderingSet.getShader();
