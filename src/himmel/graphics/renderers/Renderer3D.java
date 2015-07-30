@@ -59,7 +59,7 @@ public class Renderer3D extends Renderer {
                     UV_FLOATS_PER_COMPONENT +
                     TID_FLOATS_PER_COMPONENT +
                     MID_FLOATS_PER_COMPONENT);
-    private final int MAX_VERTICES = 12 * Short.MAX_VALUE;
+    private final int MAX_VERTICES = 50 * Short.MAX_VALUE;
     private final int BUFFER_SIZE = COMPONENT_SIZE_BYTES * MAX_VERTICES;
 
     public static final int AMOUNT_OF_MATRICES = 16;

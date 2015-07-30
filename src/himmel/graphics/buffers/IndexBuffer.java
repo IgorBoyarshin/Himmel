@@ -45,7 +45,7 @@ public class IndexBuffer {
         type = isShort ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
         filling = false;
 
-        BUFFER_SIZE_BYTES = Short.MAX_VALUE * 8 * 3 * (isShort ? BYTES_IN_SHORT : BYTES_IN_INT);
+        BUFFER_SIZE_BYTES = 20 * Short.MAX_VALUE * 8 * 3 * (isShort ? BYTES_IN_SHORT : BYTES_IN_INT);
 
         bufferID = glGenBuffers();
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferID);
