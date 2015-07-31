@@ -193,9 +193,17 @@ public class Renderer3D extends Renderer {
                     gpuBuffer.putFloat(0.0f);
                     gpuBuffer.putFloat(0.0f);
                 } else {
-                    gpuBuffer.putFloat(normals[3 * i + 0]);
-                    gpuBuffer.putFloat(normals[3 * i + 1]);
-                    gpuBuffer.putFloat(normals[3 * i + 2]);
+                    if (modelMatrix == null) {
+                        gpuBuffer.putFloat(normals[3 * i + 0]);
+                        gpuBuffer.putFloat(normals[3 * i + 1]);
+                        gpuBuffer.putFloat(normals[3 * i + 2]);
+                    } else {
+                        Vector3f normal = modelMatrix.multiply(normals[3 * i + 0], normals[3 * i + 1], normals[3 * i + 2], 0.0f);
+
+                        gpuBuffer.putFloat(normal.x);
+                        gpuBuffer.putFloat(normal.y);
+                        gpuBuffer.putFloat(normal.z);
+                    }
                 }
 
                 gpuBuffer.putFloat(colors[4 * i + 0]);
