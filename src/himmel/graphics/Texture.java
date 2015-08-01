@@ -22,6 +22,10 @@ public class Texture {
     public static final int FILTER_NEAREST = 0;
     public static final int FILTER_LINEAR = 1;
 
+    public Texture(int tid) {
+        textureID = tid;
+    }
+
     public Texture(String path, final int type) {
         textureID = loadTexture(path, type);
     }
