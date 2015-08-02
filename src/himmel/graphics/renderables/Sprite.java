@@ -46,7 +46,8 @@ public class Sprite extends Renderable {
     }
 
     public static float[] getDefaultUvs() {
-        return new float[]{0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f};
+//        return new float[]{0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f};
+        return new float[]{0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f};
     }
 
     public static void transformIntoFloats(List<Vector2f> vectors) {
@@ -55,10 +56,6 @@ public class Sprite extends Renderable {
             floats[i * 2] = vectors.get(i).x;
             floats[i * 2 + 1] = vectors.get(i).y;
         }
-    }
-
-    public void setTextureId(int textureId) {
-        this.setTexture(new Texture(textureId));
     }
 
     public void setNewPosition(Vector3f position) {
