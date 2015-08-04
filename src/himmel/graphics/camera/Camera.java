@@ -7,7 +7,7 @@ import himmel.math.Vector3f;
 /**
  * Created by Igor on 20-Jul-15.
  */
-public abstract class Camera implements Matrixable{
+public abstract class Camera implements Matrixable {
     protected Vector3f cameraPosition;
     protected float pitch; // tangazh
     protected float yaw; // riskanie
@@ -87,5 +87,9 @@ public abstract class Camera implements Matrixable{
         this.cameraPosition.x += shift.x;
         this.cameraPosition.y += shift.y;
         this.cameraPosition.z += shift.z;
+    }
+
+    public void printPosition() {
+        System.out.println("Camera position (" + cameraPosition.x + ";" + cameraPosition.y + ";" + cameraPosition.z + ")");
     }
 }
