@@ -11,6 +11,11 @@ import himmel.math.Vector4f;
 public class Cube extends Renderable {
 //    private static RenderingSet renderingSet;
 
+    public Cube(Vector4f color, RenderingSet renderingSet) {
+        super(convertVertices(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(1.0f, 1.0f, 1.0f)),
+                convertNormals(), convertColors(color), convertIndices(), renderingSet);
+    }
+
     public Cube(Vector3f center, Vector3f size, Vector4f color, RenderingSet renderingSet) {
         super(convertVertices(center, size), convertNormals(), convertColors(color), convertIndices(), renderingSet);
     }
