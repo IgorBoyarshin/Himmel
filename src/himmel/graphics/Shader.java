@@ -6,7 +6,6 @@ import himmel.math.Vector3f;
 import himmel.math.Vector4f;
 import himmel.utils.ShaderUtils;
 
-import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.HashMap;
@@ -27,10 +26,18 @@ public class Shader {
 
     private Map<String, Integer> locationCache = new HashMap<String, Integer>();
 
-    private final int ID;
+    private final int shaderId;
+    private final String id;
+
+    private static final String idSeparator = "*";
 
     public Shader(String vertex, String fragment) {
-        ID = ShaderUtils.load(vertex, fragment);
+        shaderId = ShaderUtils.load(vertex, fragment);
+        this.id = getFileName(vertex) + idSeparator + getFileName(fragment);
+    }
+
+    public String getId() {
+        return id;
     }
 
     public int getUniform(String name) {
@@ -38,7 +45,7 @@ public class Shader {
             return locationCache.get(name);
         }
 
-        int result = glGetUniformLocation(ID, name);
+        int result = glGetUniformLocation(shaderId, name);
         if (result == -1) {
             System.err.println(":> Could not find uniform variable '" + name + "'!");
         } else {
@@ -85,10 +92,19 @@ public class Shader {
     }
 
     public void enable() {
-        glUseProgram(ID);
+        glUseProgram(shaderId);
     }
 
     public void disable() {
         glUseProgram(0);
+    }
+
+    private static String getFileName(String fileName) {
+        int dotIndex = fileName.indexOf(".");
+        int curIndex = dotIndex - 1;
+        while (curIndex > 0 && fileName.charAt(curIndex) != '/') {
+            curIndex--;
+        }
+        return fileName.substring(curIndex + 1, dotIndex);
     }
 }

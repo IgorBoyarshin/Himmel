@@ -1,16 +1,11 @@
 package himmel.graphics.fonts;
 
 import himmel.graphics.renderables.Renderable;
-import himmel.graphics.Shader;
-import himmel.graphics.renderers.Renderer;
 import himmel.graphics.renderers.RenderingSet;
-import himmel.graphics.renderers.TextRenderer;
 import himmel.math.Matrix4f;
 import himmel.math.Vector2f;
 import himmel.math.Vector3f;
 import himmel.math.Vector4f;
-
-import java.util.ArrayList;
 
 /**
  * Created by Igor on 02-Jun-15.

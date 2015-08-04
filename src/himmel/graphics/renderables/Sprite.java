@@ -1,14 +1,11 @@
 package himmel.graphics.renderables;
 
 import himmel.graphics.*;
-import himmel.graphics.renderers.FastRenderer;
-import himmel.graphics.renderers.Renderer;
 import himmel.graphics.renderers.RenderingSet;
 import himmel.math.Vector2f;
 import himmel.math.Vector3f;
 import himmel.math.Vector4f;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

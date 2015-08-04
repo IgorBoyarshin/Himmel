@@ -239,4 +239,9 @@ public class FastRenderer extends Renderer {
     public static int getBufferSizeInBytes() {
         return BUFFER_SIZE;
     }
+
+//    @Override
+//    public Renderer createInstance() {
+//        return new FastRenderer();
+//    }
 }

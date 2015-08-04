@@ -177,4 +177,9 @@ public class WaterRenderer extends Renderer {
             ibo.end();
         }
     }
+
+//    @Override
+//    public Object createInstance() {
+//        return new WaterRenderer();
+//    }
 }

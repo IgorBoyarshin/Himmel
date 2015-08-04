@@ -228,4 +228,9 @@ public class TextRenderer extends Renderer {
             glBindBuffer(GL_ARRAY_BUFFER, 0);
         }
     }
+
+//    @Override
+//    public Renderer createInstance() {
+//        return new Renderer3D();
+//    }
 }

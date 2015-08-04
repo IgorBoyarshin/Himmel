@@ -24,16 +24,48 @@ public class Layer {
     public void add(Renderable renderable) {
         count++;
         reSubmit = true;
-        RenderingSet renderingSet = renderable.getRenderingSet();
 
-        if (!objects.containsKey(renderingSet)) {
+        RenderingSet renderingSet = renderable.getRenderingSet();
+        String renderingSetId = renderingSet.getId();
+
+        boolean found = objects.keySet()
+                .stream()
+                .anyMatch(rs -> rs.getId().equals(renderingSetId));
+
+//        boolean found = false;
+//        for (RenderingSet rs : objects.keySet()) {
+//            if (rs.getId().equals(renderingSetId)) {
+//                found = true;
+//                break;
+//            }
+//        }
+
+        if (!found) {
             List<Renderable> renderables = new ArrayList<>();
 
             renderables.add(renderable);
-            objects.put(renderingSet, renderables);
+            objects.put(renderingSet.createInstance(), renderables);
         } else {
-            objects.get(renderingSet).add(renderable);
+//            objects.get(renderingSet).add(renderable);
+            objects.get(getRenderingSet(renderingSetId)).add(renderable);
         }
+
+//        if (!objects.containsKey(renderingSet)) {
+//            List<Renderable> renderables = new ArrayList<>();
+//
+//            renderables.add(renderable);
+//            objects.put(renderingSet, renderables);
+//        } else {
+//            objects.get(renderingSet).add(renderable);
+//        }
+    }
+
+    private RenderingSet getRenderingSet(String id) {
+        return objects.keySet()
+                .stream()
+                .filter(renderingSet -> renderingSet.getId().equals(id))
+                .findFirst()
+                .get();
     }
 
     public void update() {

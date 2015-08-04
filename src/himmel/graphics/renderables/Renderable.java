@@ -1,19 +1,15 @@
 package himmel.graphics.renderables;
 
 import himmel.graphics.Matrixable;
-import himmel.graphics.Shader;
 import himmel.graphics.Texture;
 import himmel.graphics.renderers.Renderer;
 import himmel.graphics.renderers.RenderingSet;
 import himmel.math.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by Igor on 21-May-15.
  */
-public class Renderable implements Matrixable{
+public class Renderable implements Matrixable {
     private float[] vertices;
     private float[] normals;
     private float[] colors;

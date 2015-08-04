@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by Igor on 26-May-15.
  */
-public abstract class Renderer {
+public abstract class Renderer{
     protected List<Matrix4f> transformationStack;
     protected volatile Matrix4f transformationStackCash;
 
@@ -51,4 +51,13 @@ public abstract class Renderer {
     public abstract void submit(Renderable renderable);
 
     public abstract void render();
+
+    public String getId() {
+        String classNameFull = this.getClass().getName();
+        int curIndex = classNameFull.length() - 1;
+        while (curIndex > 0 && classNameFull.charAt(curIndex) != '.') {
+            curIndex--;
+        }
+        return classNameFull.substring(curIndex + 1);
+    }
 }

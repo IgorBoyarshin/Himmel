@@ -297,4 +297,9 @@ public class Renderer3D extends Renderer {
 //            System.out.println();
         }
     }
+//
+//    @Override
+//    public Renderer createInstance() {
+//        return new Renderer3D();
+//    }
 }
