@@ -36,6 +36,11 @@ public class Shader {
         this.id = getFileName(vertex) + idSeparator + getFileName(fragment);
     }
 
+    public Shader(String vertex, String fragment, String geometry) {
+        shaderId = ShaderUtils.load(vertex, fragment, geometry);
+        this.id = getFileName(vertex) + idSeparator + getFileName(fragment) + idSeparator + getFileName(geometry);
+    }
+
     public String getId() {
         return id;
     }
