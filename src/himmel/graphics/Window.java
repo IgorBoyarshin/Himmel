@@ -200,6 +200,7 @@ public class Window {
         GLContext.createFromCurrent();
 
         glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
         glEnable(GL_BLEND);
         glEnable(GL_MULTISAMPLE);
 //        glEnable(GL_CULL_FACE);
