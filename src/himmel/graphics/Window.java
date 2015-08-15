@@ -33,14 +33,14 @@ public class Window {
     private final boolean WIREFRAME;
     private final int SWAP_INTERWAL;
     private final boolean LOG_INFO;
-    private final AntiAliasing ANTI_ALIASING;
+    private final int ANTI_ALIASING;
 
-    public static final AntiAliasing ANTI_ALIASING_OFF = AntiAliasing.ANTI_ALIASING_OFF;
-    public static final AntiAliasing ANTI_ALIASING_2X = AntiAliasing.ANTI_ALIASING_2X;
-    public static final AntiAliasing ANTI_ALIASING_4X = AntiAliasing.ANTI_ALIASING_4X;
-    public static final AntiAliasing ANTI_ALIASING_8X = AntiAliasing.ANTI_ALIASING_8X;
+    public static final int ANTI_ALIASING_OFF = 1;
+    public static final int ANTI_ALIASING_2X = 2;
+    public static final int ANTI_ALIASING_4X = 4;
+    public static final int ANTI_ALIASING_8X = 8;
 
-    public Window(String title, int width, int height, AntiAliasing antiAliasing, boolean vsync, boolean fullscreen,
+    public Window(String title, int width, int height, int antiAliasing, boolean vsync, boolean fullscreen,
                   boolean wireframe, boolean log) {
         this.TITLE = title;
         this.WIDTH = width;
@@ -72,7 +72,7 @@ public class Window {
         this.TITLE = title;
         this.WIDTH = width;
         this.HEIGHT = height;
-        this.ANTI_ALIASING = AntiAliasing.ANTI_ALIASING_OFF;
+        this.ANTI_ALIASING = ANTI_ALIASING_OFF;
         this.SWAP_INTERWAL = 1;
         this.FULLSCREEN = false;
         this.WIREFRAME = false;
@@ -164,7 +164,7 @@ public class Window {
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, RESIZABLE ? GL_TRUE : GL_FALSE);
-        glfwWindowHint(GLFW_SAMPLES, ANTI_ALIASING.samples);
+        glfwWindowHint(GLFW_SAMPLES, ANTI_ALIASING);
 
         ByteBuffer vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
         glfwWindow = glfwCreateWindow(FULLSCREEN ? GLFWvidmode.width(vidmode) : WIDTH,
@@ -234,18 +234,5 @@ public class Window {
 
     public String getName() {
         return TITLE;
-    }
-
-    private static enum AntiAliasing {
-        ANTI_ALIASING_OFF(1),
-        ANTI_ALIASING_2X(2),
-        ANTI_ALIASING_4X(2),
-        ANTI_ALIASING_8X(2);
-
-        private int samples;
-
-        AntiAliasing(int samples) {
-            this.samples = samples;
-        }
     }
 }
