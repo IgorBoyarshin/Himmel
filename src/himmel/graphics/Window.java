@@ -95,6 +95,10 @@ public class Window {
         }
     }
 
+    public double getTimeSinceLaunch() {
+        return GLFW.glfwGetTime();
+    }
+
     public void setWireframe(boolean wireframe) {
         this.WIREFRAME = wireframe;
     }
