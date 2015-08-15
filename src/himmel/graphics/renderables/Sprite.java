@@ -43,8 +43,8 @@ public class Sprite extends Renderable {
     }
 
     public static float[] getDefaultUvs() {
-//        return new float[]{0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f};
-        return new float[]{0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f};
+        return new float[]{0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f};
+//        return new float[]{0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f};
     }
 
     public static void transformIntoFloats(List<Vector2f> vectors) {
