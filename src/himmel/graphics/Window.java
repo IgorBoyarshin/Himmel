@@ -30,10 +30,10 @@ public class Window {
 
     private final boolean RESIZABLE = false;
     private final boolean FULLSCREEN;
-    private final boolean WIREFRAME;
     private final int SWAP_INTERWAL;
-    private final boolean LOG_INFO;
     private final int ANTI_ALIASING;
+    private boolean WIREFRAME;
+    private boolean LOG_INFO;
 
     public static final int ANTI_ALIASING_OFF = 1;
     public static final int ANTI_ALIASING_2X = 2;
@@ -93,6 +93,14 @@ public class Window {
         if (LOG_INFO) {
             Log.logInfo("OpenGL version: " + getOpenglVersion());
         }
+    }
+
+    public void setWireframe(boolean wireframe) {
+        this.WIREFRAME = wireframe;
+    }
+
+    public void setLogInfo(boolean logInfo) {
+        this.LOG_INFO = logInfo;
     }
 
     public void pollEvents() {
