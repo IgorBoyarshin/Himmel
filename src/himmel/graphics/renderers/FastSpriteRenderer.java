@@ -161,10 +161,17 @@ public class FastSpriteRenderer extends Renderer {
             gpuBuffer.putFloat(v1.x);
             gpuBuffer.putFloat(v1.y);
             gpuBuffer.putFloat(v1.z);
-            gpuBuffer.putFloat(colors[4 * 0 + 0]);
-            gpuBuffer.putFloat(colors[4 * 0 + 1]);
-            gpuBuffer.putFloat(colors[4 * 0 + 2]);
-            gpuBuffer.putFloat(colors[4 * 0 + 3]);
+            if (colors == null) {
+                gpuBuffer.putFloat(1.0f);
+                gpuBuffer.putFloat(1.0f);
+                gpuBuffer.putFloat(1.0f);
+                gpuBuffer.putFloat(1.0f);
+            } else {
+                gpuBuffer.putFloat(colors[4 * 0 + 0]);
+                gpuBuffer.putFloat(colors[4 * 0 + 1]);
+                gpuBuffer.putFloat(colors[4 * 0 + 2]);
+                gpuBuffer.putFloat(colors[4 * 0 + 3]);
+            }
             if (uv == null) {
                 gpuBuffer.putFloat(0.0f);
                 gpuBuffer.putFloat(0.0f);

@@ -161,10 +161,17 @@ public class FastRenderer extends Renderer {
                 gpuBuffer.putFloat(vertex.y);
                 gpuBuffer.putFloat(vertex.z);
 
-                gpuBuffer.putFloat(colors[4 * i + 0]);
-                gpuBuffer.putFloat(colors[4 * i + 1]);
-                gpuBuffer.putFloat(colors[4 * i + 2]);
-                gpuBuffer.putFloat(colors[4 * i + 3]);
+                if (colors == null) {
+                    gpuBuffer.putFloat(1.0f);
+                    gpuBuffer.putFloat(1.0f);
+                    gpuBuffer.putFloat(1.0f);
+                    gpuBuffer.putFloat(1.0f);
+                } else {
+                    gpuBuffer.putFloat(colors[4 * i + 0]);
+                    gpuBuffer.putFloat(colors[4 * i + 1]);
+                    gpuBuffer.putFloat(colors[4 * i + 2]);
+                    gpuBuffer.putFloat(colors[4 * i + 3]);
+                }
 
                 if (uv == null) {
                     gpuBuffer.putFloat(0.0f);
