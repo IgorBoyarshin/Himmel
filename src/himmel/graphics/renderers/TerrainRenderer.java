@@ -38,20 +38,17 @@ public class TerrainRenderer extends Renderer {
     private final int SHADER_ATTR_VERTEX = 0;
     private final int SHADER_ATTR_NORMAL = 1;
     private final int SHADER_ATTR_UV = 2;
-    private final int SHADER_ATTR_TID = 3;
 
     private final int FLOAT_SIZE_BYTES = 4;
 
     private final int VERTEX_FLOATS_PER_COMPONENT = 3;
     private final int NORMAL_FLOATS_PER_COMPONENT = 3;
     private final int UV_FLOATS_PER_COMPONENT = 2;
-    private final int TID_FLOATS_PER_COMPONENT = 1;
 
     private final int COMPONENT_SIZE_BYTES = FLOAT_SIZE_BYTES *
             (VERTEX_FLOATS_PER_COMPONENT +
                     NORMAL_FLOATS_PER_COMPONENT +
-                    UV_FLOATS_PER_COMPONENT +
-                    TID_FLOATS_PER_COMPONENT);
+                    UV_FLOATS_PER_COMPONENT);
     private final int MAX_VERTICES = 40 * Short.MAX_VALUE;
     private final int BUFFER_SIZE = COMPONENT_SIZE_BYTES * MAX_VERTICES;
 
@@ -85,12 +82,10 @@ public class TerrainRenderer extends Renderer {
         glEnableVertexAttribArray(SHADER_ATTR_VERTEX);
         glEnableVertexAttribArray(SHADER_ATTR_NORMAL);
         glEnableVertexAttribArray(SHADER_ATTR_UV);
-        glEnableVertexAttribArray(SHADER_ATTR_TID);
 
         glVertexAttribPointer(SHADER_ATTR_VERTEX, 3, GL_FLOAT, false, COMPONENT_SIZE_BYTES, 0);
         glVertexAttribPointer(SHADER_ATTR_NORMAL, 3, GL_FLOAT, false, COMPONENT_SIZE_BYTES, 12);
         glVertexAttribPointer(SHADER_ATTR_UV, 2, GL_FLOAT, false, COMPONENT_SIZE_BYTES, 12 + 12);
-        glVertexAttribPointer(SHADER_ATTR_TID, 1, GL_FLOAT, false, COMPONENT_SIZE_BYTES, 12 + 12 + 8);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
@@ -107,23 +102,25 @@ public class TerrainRenderer extends Renderer {
 //            Matrix4f modelMatrix = renderable.getModelMatrix();
             short[] indices = renderable.getIndices();
 
-            final int size = vertices.length / 3;
+            final int size = vertices == null ? 0 : vertices.length / 3;
 
             if (currentVerticesAmount + size >= MAX_VERTICES) {
                 // TODO: Was 'flush' before, but now do nothing probably. Just print that the buffer is overflowed
             }
 
             // Indices
-            for (short index : indices) {
-                if (ibo.getType() == GL_UNSIGNED_SHORT) {
-                    ibo.addShort((short) (index + currentVerticesAmount));
-                } else {
-                    ibo.addInt(index + currentVerticesAmount);
+            if (indices != null) {
+                for (short index : indices) {
+                    if (ibo.getType() == GL_UNSIGNED_SHORT) {
+                        ibo.addShort((short) (index + currentVerticesAmount));
+                    } else {
+                        ibo.addInt(index + currentVerticesAmount);
+                    }
                 }
             }
 
             currentVerticesAmount += size;
-            currentIndicesAmount += indices.length;
+            currentIndicesAmount += indices == null ? 0 : indices.length;
 
             // Texture
             float ts = 0.0f;
@@ -169,9 +166,11 @@ public class TerrainRenderer extends Renderer {
 //                        gpuBuffer.putFloat(vertex.z);
 //                    }
 //                }
+
                 gpuBuffer.putFloat(vertices[3 * i + 0]);
                 gpuBuffer.putFloat(vertices[3 * i + 1]);
                 gpuBuffer.putFloat(vertices[3 * i + 2]);
+
 
                 // TODO: how should I treat normals???
                 if (normals == null) {
@@ -204,7 +203,8 @@ public class TerrainRenderer extends Renderer {
                     gpuBuffer.putFloat(uv[2 * i + 1]);
                 }
 
-                gpuBuffer.putFloat(ts);
+//                gpuBuffer.putFloat(ts);
+
             }
         }
     }
