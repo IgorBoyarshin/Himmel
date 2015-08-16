@@ -101,6 +101,10 @@ public class Window {
 
     public void setWireframe(boolean wireframe) {
         this.WIREFRAME = wireframe;
+        if (WIREFRAME) {
+            glPolygonMode(GL_FRONT, GL_LINE);
+            glPolygonMode(GL_BACK, GL_LINE);
+        }
     }
 
     public void setLogInfo(boolean logInfo) {
