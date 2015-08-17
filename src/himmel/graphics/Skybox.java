@@ -33,7 +33,8 @@ public class Skybox {
     }
 
     public void render() {
-        glDepthMask(false);
+//        glDepthMask(false);
+        glDepthFunc(GL_LEQUAL);
         shader.enable();
         vao.bind();
         glActiveTexture(GL_TEXTURE0); // Change here for multiple
@@ -43,7 +44,8 @@ public class Skybox {
 
         vao.unbind();
         shader.disable();
-        glDepthMask(true);
+        glDepthFunc(GL_LESS);
+//        glDepthMask(true);
     }
 
     public void setViewMatrix(Matrix4f viewMatrix) {
@@ -51,9 +53,9 @@ public class Skybox {
 
         Matrix4f withoutTranslation = new Matrix4f();
         withoutTranslation.matrix = viewMatrix.matrix;
-        withoutTranslation.matrix[4*3+0] = 0;
-        withoutTranslation.matrix[4*3+1] = 0;
-        withoutTranslation.matrix[4*3+2] = 0;
+        withoutTranslation.matrix[4 * 3 + 0] = 0;
+        withoutTranslation.matrix[4 * 3 + 1] = 0;
+        withoutTranslation.matrix[4 * 3 + 2] = 0;
 
         shader.setUniformMat4fv(viewMatrixUniformName, withoutTranslation.toFloatBuffer());
     }

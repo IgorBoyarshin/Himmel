@@ -11,6 +11,9 @@ import java.nio.ByteOrder;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.*;
 import static org.lwjgl.opengl.GL13.*;
+import static org.lwjgl.opengl.GL14.*;
+import static org.lwjgl.opengl.GL42.*;
+import static org.lwjgl.opengl.GL30.*;
 
 /**
  * Created by Igor on 28-May-15.
@@ -32,8 +35,8 @@ public class Texture {
         textureID = loadTexture(path, type);
     }
 
-    public Texture(String path, final int type, final int minFilter, final int magFilter) {
-        textureID = loadTexture(path, type, minFilter, magFilter);
+    public Texture(String path, final int type, final int minFilter, final int magFilter, final boolean genMipmaps) {
+        textureID = loadTexture(path, type, minFilter, magFilter, genMipmaps);
     }
 
     public Texture(String paths[]) {
@@ -73,20 +76,42 @@ public class Texture {
     }
 
     private int loadTexture(String path, int type) {
-        return loadTexture(path, type, FILTER_NEAREST, FILTER_LINEAR);
+        return loadTexture(path, type, FILTER_LINEAR, FILTER_LINEAR, false);
     }
 
-    private int loadTexture(String path, int type, int minFilter, int magFilter) {
+    private int loadTexture(String path, int type, int minFilter, int magFilter, boolean genMipmaps) {
         ImageData imageData = loadFile(path, type);
 
         int id = glGenTextures();
         glBindTexture(GL_TEXTURE_2D, id);
+        glEnable(GL_TEXTURE_2D);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter == FILTER_LINEAR ? GL_LINEAR : GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter == FILTER_LINEAR ? GL_LINEAR : GL_NEAREST);
+        glTexStorage2D(GL_TEXTURE_2D, 6, type == TYPE_RGB ? GL_RGB8 : GL_RGBA8, imageData.width, imageData.height);
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, imageData.width, imageData.height,
+                type == TYPE_RGB ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, imageData.imageBuffer);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, type == TYPE_RGB ? GL_RGB : GL_RGBA,
-                imageData.width, imageData.height, 0, type == TYPE_RGB ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, imageData.imageBuffer);
+//        glTexImage2D(GL_TEXTURE_2D, 0, type == TYPE_RGB ? GL_RGB : GL_RGBA,
+//                imageData.width, imageData.height, 0, type == TYPE_RGB ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, imageData.imageBuffer);
+
+        if (genMipmaps) {
+            glGenerateMipmap(GL_TEXTURE_2D);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                    minFilter == FILTER_LINEAR ? GL_LINEAR_MIPMAP_LINEAR : GL_NEAREST_MIPMAP_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+                    magFilter == FILTER_LINEAR ? GL_LINEAR : GL_NEAREST);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, -0.2f);
+        } else {
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                    minFilter == FILTER_LINEAR ? GL_LINEAR  : GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+                    magFilter == FILTER_LINEAR ? GL_LINEAR : GL_NEAREST);
+        }
+//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter == FILTER_LINEAR ? GL_LINEAR : GL_NEAREST);
+//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter == FILTER_LINEAR ? GL_LINEAR : GL_NEAREST);
+//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter == FILTER_LINEAR ? GL_LINEAR_MIPMAP_NEAREST : GL_NEAREST_MIPMAP_NEAREST);
+//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter == FILTER_LINEAR ? GL_LINEAR_MIPMAP_LINEAR : GL_NEAREST_MIPMAP_NEAREST);
 
         glBindTexture(GL_TEXTURE_2D, 0);
 
