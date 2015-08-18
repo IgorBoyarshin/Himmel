@@ -104,6 +104,9 @@ public class Window {
         if (WIREFRAME) {
             glPolygonMode(GL_FRONT, GL_LINE);
             glPolygonMode(GL_BACK, GL_LINE);
+        } else {
+            glPolygonMode(GL_FRONT, GL_FILL);
+            glPolygonMode(GL_BACK, GL_FILL);
         }
     }
 
