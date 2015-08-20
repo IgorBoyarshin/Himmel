@@ -41,6 +41,12 @@ public class Shader {
         this.id = getFileName(vertex) + idSeparator + getFileName(fragment) + idSeparator + getFileName(geometry);
     }
 
+    public Shader(String vertex, String fragment, String geometry, String tessellationControl, String tessellationEvaluation) {
+        shaderId = ShaderUtils.load(vertex, fragment, geometry, tessellationControl, tessellationEvaluation);
+        this.id = getFileName(vertex) + idSeparator + getFileName(fragment) + idSeparator + getFileName(geometry)
+                + idSeparator + getFileName(tessellationControl) + idSeparator + getFileName(tessellationEvaluation);
+    }
+
     public String getId() {
         return id;
     }
