@@ -18,12 +18,6 @@ import static org.lwjgl.opengl.GL20.glUseProgram;
  * Created by Igor on 01-May-15.
  */
 public class Shader {
-//    public static final int ATTR_VERTEX = 0;
-//    public static final int ATTR_NORMAL = 1;
-//    public static final int ATTR_UV = 2;
-//    public static final int ATTR_TID = 3;
-//    public static final int ATTR_COLOR = 4;
-
     private Map<String, Integer> locationCache = new HashMap<String, Integer>();
 
     private final int shaderId;
@@ -36,15 +30,22 @@ public class Shader {
         this.id = getFileName(vertex) + idSeparator + getFileName(fragment);
     }
 
-    public Shader(String vertex, String fragment, String geometry) {
-        shaderId = ShaderUtils.load(vertex, fragment, geometry);
-        this.id = getFileName(vertex) + idSeparator + getFileName(fragment) + idSeparator + getFileName(geometry);
+    public Shader(String vertex, String geometry, String fragment) {
+        shaderId = ShaderUtils.load(vertex, geometry, fragment);
+        this.id = getFileName(vertex) + idSeparator + getFileName(geometry) + idSeparator + getFileName(fragment);
     }
 
-    public Shader(String vertex, String fragment, String geometry, String tessellationControl, String tessellationEvaluation) {
-        shaderId = ShaderUtils.load(vertex, fragment, geometry, tessellationControl, tessellationEvaluation);
-        this.id = getFileName(vertex) + idSeparator + getFileName(fragment) + idSeparator + getFileName(geometry)
-                + idSeparator + getFileName(tessellationControl) + idSeparator + getFileName(tessellationEvaluation);
+    public Shader(String vertex, String tessellationControl, String tessellationEvaluation, String fragment) {
+        shaderId = ShaderUtils.load(vertex, tessellationControl, tessellationEvaluation, fragment);
+        this.id = getFileName(vertex) + idSeparator + getFileName(tessellationControl) + idSeparator +
+                getFileName(tessellationEvaluation) + idSeparator + getFileName(fragment);
+    }
+
+    public Shader(String vertex, String tessellationControl, String tessellationEvaluation, String geometry, String fragment) {
+        shaderId = ShaderUtils.load(vertex, tessellationControl, tessellationEvaluation, geometry, fragment);
+        this.id = getFileName(vertex) + idSeparator + getFileName(tessellationControl) + idSeparator +
+                getFileName(tessellationEvaluation) + idSeparator + getFileName(geometry) +
+                idSeparator + getFileName(fragment);
     }
 
     public String getId() {
