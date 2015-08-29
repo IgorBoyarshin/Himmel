@@ -48,6 +48,10 @@ public class Skybox {
 //        glDepthMask(true);
     }
 
+    public Shader getShader() {
+        return shader;
+    }
+
     public void setViewMatrix(Matrix4f viewMatrix) {
         shader.enable();
 
