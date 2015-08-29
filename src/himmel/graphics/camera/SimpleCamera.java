@@ -12,6 +12,8 @@ public class SimpleCamera extends Camera {
     private final float MAX_PITCH = 0.98f * 90.0f;
     private final float MIN_PITCH = -0.98f * 90.0f;
 
+    private Matrix4f attachedMatrix;
+
     public SimpleCamera(Vector3f position) {
         super(position);
     }
@@ -37,12 +39,25 @@ public class SimpleCamera extends Camera {
         Matrix4f rot1 = Matrix4f.rotation(-pitch, 1.0f, 0.0f, 0.0f);
         Matrix4f rot2 = Matrix4f.rotation(-yaw, 0.0f, 1.0f, 0.0f);
         Matrix4f pos = Matrix4f.translation(new Vector3f(-cameraPosition.x, -cameraPosition.y, -cameraPosition.z));
-        return rot1.multiply(rot2).multiply(pos);
+
+        if (attachedMatrix == null) {
+            return rot1.multiply(rot2).multiply(pos);
+        } else {
+            return rot1.multiply(rot2).multiply(pos).multiply(attachedMatrix);
+        }
     }
 
     @Override
     public void attachTo(Matrixable object) {
-
+        if (object == null) {
+            attachedMatrix = null;
+        } else {
+            attachedMatrix = object.getModelMatrix();
+            pitch = 0;
+            yaw = 0;
+            roll = 0;
+            cameraPosition = new Vector3f();
+        }
     }
 
     @Override
