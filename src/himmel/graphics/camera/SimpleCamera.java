@@ -46,21 +46,20 @@ public class SimpleCamera extends Camera {
     }
 
     @Override
-    public void move(Direction direction, float length) {
-        switch (direction) {
-            case FORWARD:
-                cameraPosition.x += -length * (float) Math.sin(Math.toRadians(yaw));
-                cameraPosition.y += length * (float) Math.sin(Math.toRadians(pitch));
-                cameraPosition.z += -length * (float) (Math.cos(Math.toRadians(pitch)) * Math.cos(Math.toRadians(yaw)));
-                break;
-            case RIGHT:
-                cameraPosition.x += -length * (float) Math.cos(Math.toRadians(yaw));
-                cameraPosition.z += length * (float) (Math.sin(Math.toRadians(yaw)));
-                break;
-            case UP:
-                cameraPosition.y += length;
-                break;
-        }
+    public void move(Vector3f direction, float length) {
+        // Assuming that the vector is normalized.
+        // May and probably will behave inappropriately if the vector is not parallel with one of the axis.
+
+        // Forward
+        cameraPosition.x += direction.z * length * (float) Math.sin(Math.toRadians(yaw));
+        cameraPosition.y += direction.z * -length * (float) Math.sin(Math.toRadians(pitch));
+        cameraPosition.z += direction.z * length * (float) (Math.cos(Math.toRadians(pitch)) * Math.cos(Math.toRadians(yaw)));
+        // Right
+        cameraPosition.x += direction.x * -length * (float) Math.cos(Math.toRadians(yaw));
+        cameraPosition.z += direction.x * length * (float) (Math.sin(Math.toRadians(yaw)));
+        // Up
+        cameraPosition.y += direction.y * length;
+
     }
 
     @Override

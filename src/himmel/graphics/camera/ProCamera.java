@@ -28,7 +28,7 @@ public class ProCamera extends Camera {
     }
 
     @Override
-    public void move(Direction direction, float length) {
+    public void move(Vector3f direction, float length) {
 
     }
 
