@@ -9,6 +9,6 @@ public class Log {
     }
 
     public static void logInfo(String info) {
-        System.out.println(":> " + info);
+        System.out.println(":> Info: " + info);
     }
 }
