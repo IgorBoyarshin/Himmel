@@ -5,7 +5,7 @@ package himmel.log;
  */
 public class Log {
     public static void logError(String error) {
-        System.out.println(":> Error: " + error);
+        System.err.println(":> Error: " + error);
     }
 
     public static void logInfo(String info) {
