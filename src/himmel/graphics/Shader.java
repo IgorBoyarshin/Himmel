@@ -1,5 +1,6 @@
 package himmel.graphics;
 
+import himmel.log.Log;
 import himmel.math.Matrix4f;
 import himmel.math.Vector2f;
 import himmel.math.Vector3f;
@@ -18,34 +19,42 @@ import static org.lwjgl.opengl.GL20.glUseProgram;
  * Created by Igor on 01-May-15.
  */
 public class Shader {
-    private Map<String, Integer> locationCache = new HashMap<String, Integer>();
-
     private final int shaderId;
     private final String id;
+    private Map<String, Integer> locationCache = new HashMap<>();
 
     private static final String idSeparator = "*";
 
-    public Shader(String vertex, String fragment) {
-        shaderId = ShaderUtils.load(vertex, fragment);
-        this.id = getFileName(vertex) + idSeparator + getFileName(fragment);
+    /**
+     * The constructor depends on the array length.
+     * Expects one of the following combinations:
+     * 1) Vertex shader, Fragment shader;
+     * 2) Vertex shader, Geometry shader, Fragment shader;
+     * 3) Vertex shader, Tessellation Control shader, Tessellation Evaluation shader, Fragment shader;
+     * 4) Vertex shader, Tessellation Control shader, Tessellation Evaluation shader, Geometry shader, Fragment shader;
+     */
+    public Shader(String[] pathsToShaders) {
+        final int MAX_AMOUNT_OF_ARGS = 4;
+        if (pathsToShaders.length < 0 || pathsToShaders.length >= MAX_AMOUNT_OF_ARGS) {
+            Log.logError("<Shader>: wrong amount of shaders in constructor(" + pathsToShaders.length + ").");
+            shaderId = 0;
+            id = null;
+            return;
+        }
+
+        shaderId = ShaderUtils.loadShaderId(pathsToShaders);
+        id = constructId(pathsToShaders);
     }
 
-    public Shader(String vertex, String geometry, String fragment) {
-        shaderId = ShaderUtils.load(vertex, geometry, fragment);
-        this.id = getFileName(vertex) + idSeparator + getFileName(geometry) + idSeparator + getFileName(fragment);
-    }
+    private String constructId(String[] pathsToShaders) {
+        StringBuilder id = new StringBuilder();
 
-    public Shader(String vertex, String tessellationControl, String tessellationEvaluation, String fragment) {
-        shaderId = ShaderUtils.load(vertex, tessellationControl, tessellationEvaluation, fragment);
-        this.id = getFileName(vertex) + idSeparator + getFileName(tessellationControl) + idSeparator +
-                getFileName(tessellationEvaluation) + idSeparator + getFileName(fragment);
-    }
+        id.append(pathsToShaders[0]);
+        for (int i = 1; i < pathsToShaders.length; i++) {
+            id.append(idSeparator).append(getFileName(pathsToShaders[0]));
+        }
 
-    public Shader(String vertex, String tessellationControl, String tessellationEvaluation, String geometry, String fragment) {
-        shaderId = ShaderUtils.load(vertex, tessellationControl, tessellationEvaluation, geometry, fragment);
-        this.id = getFileName(vertex) + idSeparator + getFileName(tessellationControl) + idSeparator +
-                getFileName(tessellationEvaluation) + idSeparator + getFileName(geometry) +
-                idSeparator + getFileName(fragment);
+        return id.toString();
     }
 
     public String getId() {
@@ -59,7 +68,7 @@ public class Shader {
 
         int result = glGetUniformLocation(shaderId, name);
         if (result == -1) {
-            System.err.println(":> Could not find uniform variable '" + name + "'!");
+            Log.logError("<Shader.getUniform>: Could not find uniform variable '" + name + "'!");
         } else {
             locationCache.put(name, result);
         }
