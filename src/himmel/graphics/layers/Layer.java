@@ -2,11 +2,7 @@ package himmel.graphics.layers;
 
 import himmel.graphics.buffers.VertexArrayObject;
 import himmel.graphics.entities.Entity;
-import himmel.graphics.renderables.Renderable;
 import himmel.graphics.Shader;
-import himmel.graphics.renderers.Renderer;
-import himmel.graphics.renderers.RenderingSet;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.*;
 
