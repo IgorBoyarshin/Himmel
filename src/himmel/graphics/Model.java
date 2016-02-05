@@ -1,13 +1,11 @@
-package himmel.graphics.renderables;
+package himmel.graphics;
 
 import himmel.math.Vector3f;
 import himmel.math.Vector3s;
-import org.lwjgl.BufferUtils;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
