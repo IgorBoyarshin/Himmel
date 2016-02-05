@@ -1,5 +1,7 @@
 package himmel.graphics.layers;
 
+import himmel.graphics.buffers.VertexArrayObject;
+import himmel.graphics.entities.Entity;
 import himmel.graphics.renderables.Renderable;
 import himmel.graphics.Shader;
 import himmel.graphics.renderers.Renderer;
@@ -8,116 +10,76 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.*;
 
+import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
+import static org.lwjgl.opengl.GL11.glDrawElements;
+
 /**
  * Created by Igor on 26-May-15.
  */
 public class Layer {
-    protected Map<RenderingSet, List<Renderable>> objects;
-    protected int count;
-    protected boolean reSubmit = true;
+    private Map<Shader, Map<VertexArrayObject, List<Entity>>> objects;
 
     public Layer() {
         objects = new HashMap<>();
-        count = 0;
     }
 
-    public void add(Renderable renderable) {
-        count++;
-        reSubmit = true;
+    public void add(Entity entity) {
+        addToShader(entity);
+    }
 
-        RenderingSet renderingSet = renderable.getRenderingSet();
-        String renderingSetId = renderingSet.getId();
+    public void remove(Entity entity) {
+        Map<VertexArrayObject, List<Entity>> vaos = objects.get(entity.getShader());
+        if (vaos == null) {
+            return;
+        }
 
-        boolean found = objects.keySet()
+        List<Entity> entities = vaos.get(entity.getVertexArrayObject());
+        if (entities == null) {
+            return;
+        }
+
+        entities.remove(entity);
+    }
+
+    private void addToShader(Entity entity) {
+        boolean shaderMatchFound = objects.keySet()
                 .stream()
-                .anyMatch(rs -> rs.getId().equals(renderingSetId));
+                .anyMatch(shader -> shader.equals(entity.getShader()));
 
-//        boolean found = false;
-//        for (RenderingSet rs : objects.keySet()) {
-//            if (rs.getId().equals(renderingSetId)) {
-//                found = true;
-//                break;
-//            }
-//        }
-
-        if (!found) {
-            List<Renderable> renderables = new ArrayList<>();
-
-            renderables.add(renderable);
-            objects.put(renderingSet.createInstance(), renderables);
-        } else {
-//            objects.get(renderingSet).add(renderable);
-            objects.get(getRenderingSet(renderingSetId)).add(renderable);
+        if (!shaderMatchFound) {
+            objects.put(entity.getShader(), new HashMap<>());
         }
-
-//        if (!objects.containsKey(renderingSet)) {
-//            List<Renderable> renderables = new ArrayList<>();
-//
-//            renderables.add(renderable);
-//            objects.put(renderingSet, renderables);
-//        } else {
-//            objects.get(renderingSet).add(renderable);
-//        }
+        addToVertexArrayObject(entity);
     }
 
-    private RenderingSet getRenderingSet(String id) {
-        return objects.keySet()
+    private void addToVertexArrayObject(Entity entity) {
+        Map<VertexArrayObject, List<Entity>> vaoMap = objects.get(entity.getShader());
+        boolean vaoMatchFound = vaoMap.keySet()
                 .stream()
-                .filter(renderingSet -> renderingSet.getId().equals(id))
-                .findFirst()
-                .get();
-    }
+                .anyMatch(vao -> vao.equals(entity.getVertexArrayObject()));
 
-    public void update() {
-        for (RenderingSet renderingSet : objects.keySet()) {
-            for (Renderable renderable : objects.get(renderingSet)) {
-                if (renderable.isChanged()) {
-                    reSubmit = true;
-                    break;
-                }
-            }
-            if (reSubmit) {
-                break;
-            }
+        if (!vaoMatchFound) {
+            vaoMap.put(entity.getVertexArrayObject(), new ArrayList<>());
         }
-
-        submit();
-    }
-
-    protected void submit() {
-        if (reSubmit) {
-            for (RenderingSet renderingSet : objects.keySet()) {
-                Shader shader = renderingSet.getShader();
-                Renderer renderer = renderingSet.getRenderer();
-
-                shader.enable();
-                renderer.begin();
-                for (Renderable renderable : objects.get(renderingSet)) {
-                    if (renderable.isAlive()) {
-                        renderable.setChanged(false);
-                        renderable.submit(renderer);
-                    } else {
-                        objects.get(renderingSet).remove(renderable);
-                    }
-                }
-                renderer.end();
-            }
-
-            reSubmit = false;
-        }
+        vaoMap.get(entity.getVertexArrayObject()).add(entity);
     }
 
     public void render() {
-        for (RenderingSet renderingSet : objects.keySet()) {
-            Shader shader = renderingSet.getShader();
-            Renderer renderer = renderingSet.getRenderer();
-
+        for (Shader shader : objects.keySet()) {
+            Map<VertexArrayObject, List<Entity>> vaos = objects.get(shader);
             shader.enable();
-            renderer.render();
+            for (VertexArrayObject vao : vaos.keySet()) {
+                List<Entity> entities = vaos.get(vao);
+                vao.bind();
+                vao.enableAttribArrays();
+                for (Entity entity : entities) {
+                    entity.setShaderParameters();
+                    glDrawElements(GL_TRIANGLES, vao.getVertexCount(), vao.getIndexType().typeCode, 0);
+                }
+                vao.disableAttribArrays();
+                vao.unbind();
+            }
+            shader.disable();
         }
-    }
-
-    public int getSize() {
-        return count;
     }
 }
