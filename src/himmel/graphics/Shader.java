@@ -20,10 +20,7 @@ import static org.lwjgl.opengl.GL20.glUseProgram;
  */
 public class Shader {
     private final int shaderId;
-    private final String id;
     private Map<String, Integer> locationCache = new HashMap<>();
-
-    private static final String idSeparator = "*";
 
     /**
      * The constructor depends on the array length.
@@ -38,27 +35,10 @@ public class Shader {
         if (pathsToShaders.length < 0 || pathsToShaders.length >= MAX_AMOUNT_OF_ARGS) {
             Log.logError("<Shader>: wrong amount of shaders in constructor(" + pathsToShaders.length + ").");
             shaderId = 0;
-            id = null;
             return;
         }
 
         shaderId = ShaderUtils.loadShaderId(pathsToShaders);
-        id = constructId(pathsToShaders);
-    }
-
-    private String constructId(String[] pathsToShaders) {
-        StringBuilder id = new StringBuilder();
-
-        id.append(pathsToShaders[0]);
-        for (int i = 1; i < pathsToShaders.length; i++) {
-            id.append(idSeparator).append(getFileName(pathsToShaders[0]));
-        }
-
-        return id.toString();
-    }
-
-    public String getId() {
-        return id;
     }
 
     public int getUniform(String name) {
@@ -118,14 +98,5 @@ public class Shader {
 
     public void disable() {
         glUseProgram(0);
-    }
-
-    private static String getFileName(String fileName) {
-        int dotIndex = fileName.indexOf(".");
-        int curIndex = dotIndex - 1;
-        while (curIndex > 0 && fileName.charAt(curIndex) != '/') {
-            curIndex--;
-        }
-        return fileName.substring(curIndex + 1, dotIndex);
     }
 }
