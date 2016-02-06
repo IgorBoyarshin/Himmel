@@ -7,6 +7,7 @@ import himmel.graphics.Shader;
 import java.util.*;
 
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
+import static org.lwjgl.opengl.GL11.glDrawArrays;
 import static org.lwjgl.opengl.GL11.glDrawElements;
 
 /**
@@ -70,7 +71,11 @@ public class Layer {
                 vao.enableAttribArrays();
                 for (Entity entity : entities) {
                     entity.setShaderParameters();
-                    glDrawElements(GL_TRIANGLES, vao.getVertexCount(), vao.getIndexType().typeCode, 0);
+                    if (vao.isIndexBufferUsed()) {
+                        glDrawElements(vao.getRenderingMode().code, vao.getVertexCount(), vao.getIndexType().typeCode, 0);
+                    } else {
+                        glDrawArrays(vao.getRenderingMode().code, 0, vao.getVertexCount());
+                    }
                 }
                 vao.disableAttribArrays();
                 vao.unbind();

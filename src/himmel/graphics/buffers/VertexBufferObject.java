@@ -14,21 +14,21 @@ import static org.lwjgl.opengl.GL15.*;
  */
 public class VertexBufferObject {
 
-    // TODO: if componentCount for a single array is not used, it is possible to remove it from constructor and putter
     // TODO: rename componentCount[]
     // TODO: there might be a better place for BYTES_IN_FLOAT
 
     private int bufferId;
-    private int componentCount[];
+    private int[] componentCount;
     private int bufferSizeInBytes;
     private final boolean dynamicDraw;
+    private int vertexCount;
 
     public static final int BYTES_IN_FLOAT = 4;
 
     /**
      * Use this constructor if you want to store a single arrays in this buffer.
      */
-    public VertexBufferObject(float data[], int componentCount, boolean dynamicDraw) {
+    public VertexBufferObject(float[] data, int componentCount, boolean dynamicDraw) {
         this.dynamicDraw = dynamicDraw;
 
         bufferId = glGenBuffers();
@@ -39,7 +39,7 @@ public class VertexBufferObject {
      * Use this constructor if you want to store multiple arrays in this buffer.
      * The data will be interleaved.
      */
-    public VertexBufferObject(FloatArray data[], int componentCount[], boolean dynamicDraw) {
+    public VertexBufferObject(FloatArray[] data, int[] componentCount, boolean dynamicDraw) {
         this.dynamicDraw = dynamicDraw;
 
         bufferId = glGenBuffers();
@@ -49,8 +49,9 @@ public class VertexBufferObject {
     /**
      * Resets the buffer and fills it with the given data.
      */
-    public void putData(float data[], int componentCount) {
+    public void putData(float[] data, int componentCount) {
         this.componentCount = new int[]{componentCount};
+        this.vertexCount = data.length / componentCount;
         bufferSizeInBytes = data.length * BYTES_IN_FLOAT;
 
         FloatBuffer bufferData = BufferUtils.createFloatBuffer(data.length);
@@ -66,8 +67,9 @@ public class VertexBufferObject {
      * Resets the buffer and fills it with the given data.
      * The data will be interleaved.
      */
-    public void putData(FloatArray data[], int componentCount[]) {
+    public void putData(FloatArray[] data, int[] componentCount) {
         this.componentCount = componentCount;
+        this.vertexCount = data[0].length() / componentCount[0];
         final int dataSizeInFloats = getArrayLength(data);
         final int newBufferSizeInBytes = dataSizeInFloats * BYTES_IN_FLOAT;
 
@@ -115,6 +117,10 @@ public class VertexBufferObject {
             count += c;
         }
         return count;
+    }
+
+    public int getVertexCount() {
+        return vertexCount;
     }
 
     public void destruct() {

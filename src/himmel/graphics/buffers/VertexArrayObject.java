@@ -8,6 +8,8 @@ import java.util.List;
 import static himmel.graphics.buffers.IndexBufferObject.ElementType;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
+import static org.lwjgl.opengl.GL11.GL_POINTS;
+import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glDisableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
@@ -19,15 +21,20 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
  * Created by Igor on 03-May-15.
  */
 public class VertexArrayObject {
-    private int arrayId;
+    private final int arrayId;
     private List<VertexBufferObject> vbos;
     private IndexBufferObject ibo;
     private List<Integer> attribArrayLocations;
+    private final RenderingMode renderingMode;
+    private boolean useIndexBuffer;
 
-    public VertexArrayObject() {
+    // TODO: fix vertexCount
+    public VertexArrayObject(RenderingMode renderingMode) {
         arrayId = glGenVertexArrays();
         vbos = new ArrayList<>();
         attribArrayLocations = new ArrayList<>();
+        this.renderingMode = renderingMode;
+        useIndexBuffer = false;
     }
 
     public void addVertexBufferObject(VertexBufferObject vbo, int attribLocationsForArrays[]) {
@@ -65,6 +72,7 @@ public class VertexArrayObject {
 
     public void setIndexBufferObject(IndexBufferObject ibo) {
         this.ibo = ibo;
+        useIndexBuffer = true;
 
         bind();
         ibo.bind();
@@ -91,13 +99,18 @@ public class VertexArrayObject {
         }
     }
 
-    public int getVertexCount() {
-        if (ibo != null) {
-            return ibo.getVertexCount();
-        }
+    public RenderingMode getRenderingMode() {
+        return renderingMode;
+    }
 
-        Log.logError("Could not get vertex count: ibo is null.");
-        return 0;
+    public boolean isIndexBufferUsed() {
+        return useIndexBuffer;
+    }
+
+    public int getVertexCount() {
+        return (useIndexBuffer) ?
+                (ibo.getVertexCount()) :
+                (vbos.get(0).getVertexCount());
     }
 
     public ElementType getIndexType() {
@@ -125,5 +138,17 @@ public class VertexArrayObject {
         ibo.destruct();
 
         glDeleteVertexArrays(arrayId);
+    }
+
+    public enum RenderingMode {
+        TRIANGLES(GL_TRIANGLES),
+        POINTS(GL_POINTS);
+        // TODO: PATCHES
+
+        public final int code;
+
+        RenderingMode(final int code) {
+            this.code = code;
+        }
     }
 }
