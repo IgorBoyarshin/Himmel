@@ -12,7 +12,10 @@ import static java.lang.Math.toRadians;
  * Created by Igor on 01-May-15.
  */
 public class Matrix4f {
-    private final int SIZE = 4 * 4;
+    private final int DIMENTION = 4;
+    private final int SIZE = DIMENTION * DIMENTION;
+
+    // Uses column-major ordering
     public float[] matrix = new float[SIZE];
 
     public Matrix4f() {
@@ -48,15 +51,14 @@ public class Matrix4f {
         return result;
     }
 
-    public static Matrix4f perspective(final float WINDOW_WIDTH, final float WINDOW_HEIGHT,
+    public static Matrix4f perspective(final float width, final float height,
                                        float fFovDeg, float fzNear, float fzFar) {
         Matrix4f result = new Matrix4f(1.0f);
 
-        float degToRad = 3.14159f * 2.0f / 360.0f;
-        float fFovRad = fFovDeg * degToRad;
-        float fFrustumScale = 1.0f / (float) Math.tan(fFovRad / 2.0f);
+        final float fFovRad = (float) Math.toRadians(fFovDeg);
+        final float fFrustumScale = 1.0f / (float) Math.tan(fFovRad / 2.0f);
 
-        result.matrix[0] = fFrustumScale / (WINDOW_WIDTH / WINDOW_HEIGHT);
+        result.matrix[0] = fFrustumScale / (width / height);
         result.matrix[5] = fFrustumScale;
         result.matrix[10] = (fzFar + fzNear) / (fzNear - fzFar);
         result.matrix[14] = (2 * fzFar * fzNear) / (fzNear - fzFar);
@@ -66,74 +68,80 @@ public class Matrix4f {
     }
 
     public static Matrix4f identity() {
-        Matrix4f result = new Matrix4f(1.0f);
-
-        return result;
+        return new Matrix4f(1.0f);
     }
 
-    public Vector3f multiply(float x, float y, float z) {
-        float xx = matrix[0 + 0 * 4] * x + matrix[0 + 1 * 4] * y + matrix[0 + 2 * 4] * z + matrix[0 + 3 * 4];
-        float yy = matrix[1 + 0 * 4] * x + matrix[1 + 1 * 4] * y + matrix[1 + 2 * 4] * z + matrix[1 + 3 * 4];
-        float zz = matrix[2 + 0 * 4] * x + matrix[2 + 1 * 4] * y + matrix[2 + 2 * 4] * z + matrix[2 + 3 * 4];
+    // The following two methods are disabled for now because I have not decided yet
+    // whether the vector should be interpreted as (x,y,z,0) or (x,y,z,1).
 
-        return new Vector3f(xx, yy, zz);
-    }
+//    public Vector3f multiply(float x, float y, float z) {
+//        final float xx = matrix[0 + 0 * 4] * x + matrix[0 + 1 * 4] * y + matrix[0 + 2 * 4] * z + matrix[0 + 3 * 4];
+//        final float yy = matrix[1 + 0 * 4] * x + matrix[1 + 1 * 4] * y + matrix[1 + 2 * 4] * z + matrix[1 + 3 * 4];
+//        final float zz = matrix[2 + 0 * 4] * x + matrix[2 + 1 * 4] * y + matrix[2 + 2 * 4] * z + matrix[2 + 3 * 4];
+//
+//        return new Vector3f(xx, yy, zz);
+//    }
+//
+//    public Vector3f multiply(Vector3f vector) {
+//        final float x = matrix[0 + 0 * 4] * vector.x + matrix[0 + 1 * 4] * vector.y + matrix[0 + 2 * 4] * vector.z + matrix[0 + 3 * 4];
+//        final float y = matrix[1 + 0 * 4] * vector.x + matrix[1 + 1 * 4] * vector.y + matrix[1 + 2 * 4] * vector.z + matrix[1 + 3 * 4];
+//        final float z = matrix[2 + 0 * 4] * vector.x + matrix[2 + 1 * 4] * vector.y + matrix[2 + 2 * 4] * vector.z + matrix[2 + 3 * 4];
+//
+//        return new Vector3f(x, y, z);
+//    }
 
-    public Vector3f multiply(Vector3f vector) {
-        float x = matrix[0 + 0 * 4] * vector.x + matrix[0 + 1 * 4] * vector.y + matrix[0 + 2 * 4] * vector.z + matrix[0 + 3 * 4];
-        float y = matrix[1 + 0 * 4] * vector.x + matrix[1 + 1 * 4] * vector.y + matrix[1 + 2 * 4] * vector.z + matrix[1 + 3 * 4];
-        float z = matrix[2 + 0 * 4] * vector.x + matrix[2 + 1 * 4] * vector.y + matrix[2 + 2 * 4] * vector.z + matrix[2 + 3 * 4];
-
-        return new Vector3f(x, y, z);
-    }
-
-    public Vector3f multiply(float x, float y, float z, float w) {
-        float xx = matrix[0 + 0 * 4] * x + matrix[0 + 1 * 4] * y
+    public Vector4f multiply(float x, float y, float z, float w) {
+        final float xx = matrix[0 + 0 * 4] * x + matrix[0 + 1 * 4] * y
                 + matrix[0 + 2 * 4] * z + matrix[0 + 3 * 4] * w;
-        float yy = matrix[1 + 0 * 4] * x + matrix[1 + 1 * 4] * y
+        final float yy = matrix[1 + 0 * 4] * x + matrix[1 + 1 * 4] * y
                 + matrix[1 + 2 * 4] * z + matrix[1 + 3 * 4] * w;
-        float zz = matrix[2 + 0 * 4] * x + matrix[2 + 1 * 4] * y
+        final float zz = matrix[2 + 0 * 4] * x + matrix[2 + 1 * 4] * y
                 + matrix[2 + 2 * 4] * z + matrix[2 + 3 * 4] * w;
+        final float ww = matrix[3 + 0 * 4] * x + matrix[3 + 1 * 4] * y
+                + matrix[3 + 2 * 4] * z + matrix[3 + 3 * 4] * w;
 
-        return new Vector3f(xx, yy, zz);
+        return new Vector4f(xx, yy, zz, ww);
     }
 
-    public Vector3f multiply(Vector4f vector) {
-        float x = matrix[0 + 0 * 4] * vector.x + matrix[0 + 1 * 4] * vector.y
+    public Vector4f multiply(Vector4f vector) {
+        final float x = matrix[0 + 0 * 4] * vector.x + matrix[0 + 1 * 4] * vector.y
                 + matrix[0 + 2 * 4] * vector.z + matrix[0 + 3 * 4] * vector.w;
-        float y = matrix[1 + 0 * 4] * vector.x + matrix[1 + 1 * 4] * vector.y
+        final float y = matrix[1 + 0 * 4] * vector.x + matrix[1 + 1 * 4] * vector.y
                 + matrix[1 + 2 * 4] * vector.z + matrix[1 + 3 * 4] * vector.w;
-        float z = matrix[2 + 0 * 4] * vector.x + matrix[2 + 1 * 4] * vector.y
+        final float z = matrix[2 + 0 * 4] * vector.x + matrix[2 + 1 * 4] * vector.y
                 + matrix[2 + 2 * 4] * vector.z + matrix[2 + 3 * 4] * vector.w;
+        final float w = matrix[3 + 0 * 4] * vector.x + matrix[3 + 1 * 4] * vector.y
+                + matrix[3 + 2 * 4] * vector.z + matrix[3 + 3 * 4] * vector.w;
 
-        return new Vector3f(x, y, z);
+        return new Vector4f(x, y, z, w);
     }
 
-    public Matrix4f multiply(Matrix4f matrixB) {
-        Matrix4f result = new Matrix4f(1.0f);
+    /**
+     * Does not alter this matrix.
+     *
+     * @return A new matrix that is the result of multiplication of this matrix over the argument.
+     */
+    public Matrix4f multiply(Matrix4f otherMatrix) {
+        Matrix4f result = new Matrix4f();
 
-        for (int y = 0; y < 4; y++) {
-            for (int x = 0; x < 4; x++) {
-                float sum = 0.0f;
-                for (int e = 0; e < 4; e++) {
-                    sum += this.matrix[x + e * 4] * matrixB.matrix[e + y * 4];
+        for (int row = 0; row < DIMENTION; row++) {
+            for (int column = 0; column < DIMENTION; column++) {
+                float element = 0.0f;
+                for (int index = 0; index < DIMENTION; index++) {
+                    element += this.matrix[row + index * DIMENTION] * otherMatrix.matrix[index + column * DIMENTION];
                 }
-                result.matrix[x + y * 4] = sum;
+                result.matrix[row + column * DIMENTION] = element;
             }
         }
-        this.matrix = result.matrix;
 
         return result;
     }
 
+    /**
+     * Does not alter this matrix.
+     */
     public Matrix4f scale(Vector3f vector) {
-//        matrix[0 + 0 * 4] *= vector.x;
-//        matrix[1 + 1 * 4] *= vector.y;
-//        matrix[2 + 2 * 4] *= vector.z;
-//        return this;
-
-        this.matrix = this.multiply(scaling(vector)).matrix;
-        return this;
+        return this.multiply(scaling(vector));
     }
 
     public static Matrix4f scaling(Vector3f vector) {
@@ -146,15 +154,11 @@ public class Matrix4f {
         return result;
     }
 
+    /**
+     * Does not alter this matrix.
+     */
     public Matrix4f translate(Vector3f vector) {
-//        matrix[0 + 3 * 4] += vector.x;
-//        matrix[1 + 3 * 4] += vector.y;
-//        matrix[2 + 3 * 4] += vector.z;
-//
-//        return this;
-
-        this.matrix = this.multiply(translation(vector)).matrix;
-        return this;
+        return this.multiply(translation(vector));
     }
 
     public static Matrix4f translation(Vector3f vector) {
@@ -167,9 +171,11 @@ public class Matrix4f {
         return result;
     }
 
+    /**
+     * Does not alter this matrix.
+     */
     public Matrix4f rotate(float angle, float x, float y, float z) {
-        this.matrix = this.multiply(rotation(angle, x, y, z)).matrix;
-        return this;
+        return this.multiply(rotation(angle, x, y, z));
     }
 
     /**
@@ -197,23 +203,26 @@ public class Matrix4f {
         return result;
     }
 
+    /**
+     * Does not alter this matrix.
+     */
     public Matrix4f rotateAboutAxis(float angle, Vector3f axis) {
-        this.matrix = this.multiply(rotationAaboutAxis(angle, axis)).matrix;
-        return this;
+        return this.multiply(rotationAboutAxis(angle, axis));
     }
 
     /**
      * Angle in Degrees
      */
-    public static Matrix4f rotationAaboutAxis(float angle, Vector3f axis) {
+    public static Matrix4f rotationAboutAxis(float angle, Vector3f axis) {
         Matrix4f result = identity();
 
         final float r = (float) toRadians(angle);
         final float argument = r / 2.0f;
+        final float sin = (float) sin(argument);
         final float q0 = (float) cos(argument);
-        final float q1 = (float) sin(argument) * axis.x;
-        final float q2 = (float) sin(argument) * axis.y;
-        final float q3 = (float) sin(argument) * axis.z;
+        final float q1 = sin * axis.x;
+        final float q2 = sin * axis.y;
+        final float q3 = sin * axis.z;
         final float q02 = q0 * q0;
         final float q12 = q1 * q1;
         final float q22 = q2 * q2;
@@ -239,28 +248,5 @@ public class Matrix4f {
         buffer.put(matrix);
         buffer.flip();
         return buffer;
-    }
-
-    public void print() {
-        System.out.print(matrix[0 + 0 * 4] + " ");
-        System.out.print(matrix[0 + 1 * 4] + " ");
-        System.out.print(matrix[0 + 2 * 4] + " ");
-        System.out.print(matrix[0 + 3 * 4] + " ");
-        System.out.println();
-        System.out.print(matrix[1 + 0 * 4] + " ");
-        System.out.print(matrix[1 + 1 * 4] + " ");
-        System.out.print(matrix[1 + 2 * 4] + " ");
-        System.out.print(matrix[1 + 3 * 4] + " ");
-        System.out.println();
-        System.out.print(matrix[2 + 0 * 4] + " ");
-        System.out.print(matrix[2 + 1 * 4] + " ");
-        System.out.print(matrix[2 + 2 * 4] + " ");
-        System.out.print(matrix[2 + 3 * 4] + " ");
-        System.out.println();
-        System.out.print(matrix[3 + 0 * 4] + " ");
-        System.out.print(matrix[3 + 1 * 4] + " ");
-        System.out.print(matrix[3 + 2 * 4] + " ");
-        System.out.print(matrix[3 + 3 * 4] + " ");
-        System.out.println();
     }
 }
