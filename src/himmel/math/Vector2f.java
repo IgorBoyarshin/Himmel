@@ -3,79 +3,66 @@ package himmel.math;
 /**
  * Created by Igor on 01-May-15.
  */
-public class Vector2f extends Vector {
+public class Vector2f {
     public float x, y;
 
     public Vector2f() {
-        super(2);
         x = 0.0f;
         y = 0.0f;
     }
 
     public Vector2f(float x, float y) {
-        super(2);
         this.x = x;
         this.y = y;
     }
 
-    @Override
-    public void normalize() {
+    public Vector2f normalize() {
         final float length = getLength();
         if (length != 0) {
             x /= length;
             y /= length;
         }
+
+        return this;
     }
 
-    @Override
     public float getLength() {
         return (float) Math.sqrt(x * x + y * y);
     }
 
-    @Override
-    public Vector copy() {
+    public Vector2f copy() {
         return new Vector2f(x, y);
     }
 
-    @Override
-    public Vector add(Vector vector) {
-        Vector2f result = (Vector2f) this.copy();
-        switch (vector.dimensions) {
-            case 2:
-                result.y += ((Vector2f) vector).y;
-            case 1:
-                result.x += ((Vector2f) vector).x;
-                break;
-        }
+    public Vector2f add(Vector2f vector) {
+        Vector2f result = this.copy();
+        result.x += vector.x;
+        result.y += vector.y;
 
         return result;
     }
 
-    @Override
-    public Vector subtract(Vector vector) {
-        Vector2f result = (Vector2f) this.copy();
-        switch (vector.dimensions) {
-            case 2:
-                result.y -= ((Vector2f) vector).y;
-            case 1:
-                result.x -= ((Vector2f) vector).x;
-                break;
-        }
+    public Vector2f subtract(Vector2f vector) {
+        Vector2f result = this.copy();
+        result.x -= vector.x;
+        result.y -= vector.y;
 
         return result;
     }
 
-    @Override
-    public float dot(Vector vector) {
-        float result = 0.0f;
-        switch (vector.dimensions) {
-            case 2:
-                result += y * ((Vector2f) vector).y;
-            case 1:
-                result += x * ((Vector2f) vector).x;
-                break;
-        }
+    public float dot(Vector2f vector) {
+        return (x * vector.x + y * vector.y);
+    }
 
-        return result;
+    public static Vector2f add(Vector2f vector1, Vector2f vector2) {
+        return vector1.add(vector2);
+    }
+
+    public static Vector2f subtract(Vector2f vector1, Vector2f vector2) {
+        return vector1.subtract(vector2);
+    }
+
+    public static float dot(Vector2f vector1, Vector2f vector2) {
+        return vector1.dot(vector2);
     }
 }

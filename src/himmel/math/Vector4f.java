@@ -3,11 +3,10 @@ package himmel.math;
 /**
  * Created by Igor on 19-May-15.
  */
-public class Vector4f extends Vector {
+public class Vector4f {
     public float x, y, z, w;
 
     public Vector4f() {
-        super(4);
         x = 0.0f;
         y = 0.0f;
         z = 0.0f;
@@ -15,15 +14,13 @@ public class Vector4f extends Vector {
     }
 
     public Vector4f(float x, float y, float z, float w) {
-        super(4);
         this.x = x;
         this.y = y;
         this.z = z;
         this.w = w;
     }
 
-    @Override
-    public void normalize() {
+    public Vector4f normalize() {
         final float length = getLength();
         if (length != 0) {
             x /= length;
@@ -31,69 +28,51 @@ public class Vector4f extends Vector {
             z /= length;
             w /= length;
         }
+
+        return this;
     }
 
-    @Override
     public float getLength() {
         return (float) Math.sqrt(x * x + y * y + z * z + w * w);
     }
 
-    @Override
-    public Vector copy() {
+    public Vector4f copy() {
         return new Vector4f(x, y, z, w);
     }
 
-    @Override
-    public Vector add(Vector vector) {
-        Vector4f result = (Vector4f) this.copy();
-        switch (vector.dimensions) {
-            case 4:
-                result.w += ((Vector4f) vector).w;
-            case 3:
-                result.z += ((Vector4f) vector).z;
-            case 2:
-                result.y += ((Vector4f) vector).y;
-            case 1:
-                result.x += ((Vector4f) vector).x;
-                break;
-        }
+    public Vector4f add(Vector4f vector) {
+        Vector4f result = this.copy();
+        result.x += vector.x;
+        result.y += vector.y;
+        result.z += vector.z;
+        result.w += vector.w;
 
         return result;
     }
 
-    @Override
-    public Vector subtract(Vector vector) {
-        Vector4f result = (Vector4f) this.copy();
-        switch (vector.dimensions) {
-            case 4:
-                result.w -= ((Vector4f) vector).w;
-            case 3:
-                result.z -= ((Vector4f) vector).z;
-            case 2:
-                result.y -= ((Vector4f) vector).y;
-            case 1:
-                result.x -= ((Vector4f) vector).x;
-                break;
-        }
+    public Vector4f subtract(Vector4f vector) {
+        Vector4f result = this.copy();
+        result.x -= vector.x;
+        result.y -= vector.y;
+        result.z -= vector.z;
+        result.w -= vector.w;
 
         return result;
     }
 
-    @Override
-    public float dot(Vector vector) {
-        float result = 0.0f;
-        switch (vector.dimensions) {
-            case 4:
-                result += w * ((Vector4f) vector).w;
-            case 3:
-                result += z * ((Vector4f) vector).z;
-            case 2:
-                result += y * ((Vector4f) vector).y;
-            case 1:
-                result += x * ((Vector4f) vector).x;
-                break;
-        }
+    public float dot(Vector4f vector) {
+        return (x * vector.x + y * vector.y + z * vector.z + w * vector.w);
+    }
 
-        return result;
+    public static Vector4f add(Vector4f vector1, Vector4f vector2) {
+        return vector1.add(vector2);
+    }
+
+    public static Vector4f subtract(Vector4f vector1, Vector4f vector2) {
+        return vector1.subtract(vector2);
+    }
+
+    public static float dot(Vector4f vector1, Vector4f vector2) {
+        return vector1.dot(vector2);
     }
 }

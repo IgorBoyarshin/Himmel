@@ -12,7 +12,7 @@ public abstract class Vector {
         this.dimensions = dimensions;
     }
 
-    public abstract void normalize();
+    public abstract Vector normalize();
     public abstract float getLength();
     public abstract Vector copy();
 
