@@ -20,79 +20,158 @@ import static org.lwjgl.system.MemoryUtil.*;
  * Created by Igor on 24-Apr-15.
  */
 public class Window {
-    private final int WIDTH, HEIGHT;
-    private final String TITLE;
-
     private long glfwWindow;
 
     private InputKeyboard keyboard;
     private InputMouse mouse;
 
-    private final boolean RESIZABLE = false;
-    private final boolean FULLSCREEN;
-    private final int SWAP_INTERWAL;
-    private final int ANTI_ALIASING;
-    private boolean WIREFRAME;
-    private boolean LOG_INFO;
+    private int windowWidth, windowHeight;
+    private final String title;
+    private final boolean resizable = false;
+    private final boolean fullscreen;
+    private final int swapInterwal;
+    private final AntiAliasing antiAliasing;
+    private boolean wireframe;
+    private boolean logInfo;
+    private boolean cursonEnabled;
+    private boolean cullBackFaces;
 
-    public static final int ANTI_ALIASING_OFF = 1;
-    public static final int ANTI_ALIASING_2X = 2;
-    public static final int ANTI_ALIASING_4X = 4;
-    public static final int ANTI_ALIASING_8X = 8;
+    public enum AntiAliasing {
+        AA_OFF(1),
+        AA_2X(2),
+        AA_4X(4),
+        AA_8X(8);
 
-    public Window(String title, int width, int height, int antiAliasing, boolean vsync, boolean fullscreen,
-                  boolean wireframe, boolean log) {
-        this.TITLE = title;
-        this.WIDTH = width;
-        this.HEIGHT = height;
-        this.ANTI_ALIASING = antiAliasing;
-        this.SWAP_INTERWAL = vsync ? 1 : 0;
-        this.FULLSCREEN = fullscreen;
-        this.WIREFRAME = wireframe;
-        this.LOG_INFO = log;
+        final int code;
 
-        if (LOG_INFO) {
-            Log.logInfo("Starting Himmel");
+        AntiAliasing(final int code) {
+            this.code = code;
+        }
+    }
+
+    public Window(String title, int width, int height, AntiAliasing antiAliasing, boolean vsync, boolean fullscreen) {
+        this.title = title;
+        this.windowWidth = width;
+        this.windowHeight = height;
+        this.antiAliasing = antiAliasing;
+        this.swapInterwal = vsync ? 1 : 0;
+        this.fullscreen = fullscreen;
+        this.wireframe = false;
+        this.logInfo = false;
+        this.cursonEnabled = false;
+        this.cullBackFaces = false;
+
+        if (logInfo) {
+            Log.logInfo("<Window>: Initializing Himmel.");
         }
 
         if (!init()) {
-            if (LOG_INFO) {
-                Log.logError("Could not start the Himmel");
+            if (logInfo) {
+                Log.logError("<Window>: Could not initialize the Himmel engine.");
+                Log.logError("<Window>: Terminating.");
             }
             glfwTerminate();
             System.exit(0);
         }
 
-        if (LOG_INFO) {
-            Log.logInfo("OpenGL version: " + getOpenglVersion());
+        if (logInfo) {
+            Log.logInfo("<Window>: OpenGL version: " + getOpenglVersion());
         }
     }
 
     public Window(String title, int width, int height) {
-        this.TITLE = title;
-        this.WIDTH = width;
-        this.HEIGHT = height;
-        this.ANTI_ALIASING = ANTI_ALIASING_OFF;
-        this.SWAP_INTERWAL = 1;
-        this.FULLSCREEN = false;
-        this.WIREFRAME = false;
-        this.LOG_INFO = false;
+        this.title = title;
+        this.windowWidth = width;
+        this.windowHeight = height;
+        this.antiAliasing = AntiAliasing.AA_OFF;
+        this.swapInterwal = 0;
+        this.fullscreen = false;
+        this.wireframe = false;
+        this.logInfo = false;
+        this.cursonEnabled = false;
+        this.cullBackFaces = false;
 
-        if (LOG_INFO) {
-            Log.logInfo("Starting Himmel");
+        if (logInfo) {
+            Log.logInfo("<Window>: Initializing Himmel.");
         }
 
         if (!init()) {
-            if (LOG_INFO) {
-                Log.logError("Could not start the Himmel");
+            if (logInfo) {
+                Log.logError("<Window>: Could not initizlize the Himmel engine.");
+                Log.logError("<Window>: Terminating.");
             }
             glfwTerminate();
             System.exit(0);
         }
 
-        if (LOG_INFO) {
-            Log.logInfo("OpenGL version: " + getOpenglVersion());
+        if (logInfo) {
+            Log.logInfo("<Window>: OpenGL version: " + getOpenglVersion());
         }
+    }
+
+    private boolean init() {
+        if (glfwInit() != GL11.GL_TRUE) {
+            Log.logError("<Window>: Unable to init GLFW.");
+            return false;
+        }
+
+        glfwDefaultWindowHints();
+        glfwWindowHint(GLFW_VISIBLE, GL_TRUE);
+        glfwWindowHint(GLFW_RESIZABLE, resizable ? GL_TRUE : GL_FALSE);
+        glfwWindowHint(GLFW_SAMPLES, antiAliasing.code);
+
+        ByteBuffer vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+        final int monitorWidth = GLFWvidmode.width(vidmode);
+        final int monitorHeight = GLFWvidmode.height(vidmode);
+        if (fullscreen) {
+            this.windowWidth = monitorWidth;
+            this.windowHeight = monitorHeight;
+        }
+
+        glfwWindow = glfwCreateWindow(windowWidth, windowHeight, title,
+                fullscreen ? glfwGetPrimaryMonitor() : NULL, NULL);
+
+        if (glfwWindow == NULL) {
+            Log.logError("<Window>: Unable to creat GLFW Window.");
+            return false;
+        }
+
+        keyboard = new InputKeyboard();
+        mouse = new InputMouse();
+
+        glfwSetCallback(glfwWindow, keyboard);
+        glfwSetCursorPosCallback(glfwWindow, mouse);
+        setShowCursor(cursonEnabled);
+        glfwSetCursorPos(glfwWindow, 0.0d, 0.0d);
+
+        if (!fullscreen) {
+            glfwSetWindowPos(
+                    glfwWindow,
+                    (monitorWidth - windowWidth) / 2,
+                    (monitorHeight - windowHeight) / 2
+            );
+        }
+
+        glfwMakeContextCurrent(glfwWindow);
+        glfwSwapInterval(swapInterwal);
+        glfwShowWindow(glfwWindow);
+
+        GLContext.createFromCurrent();
+
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
+        glEnable(GL_BLEND);
+        glEnable(GL_MULTISAMPLE);
+        if (cullBackFaces) {
+            glEnable(GL_CULL_FACE);
+            glCullFace(GL_BACK);
+        }
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        setWireframe(wireframe);
+        setClearColor(new Vector4f(0.0f, 0.0f, 0.0f, 1.0f));
+
+        return true;
     }
 
     public double getTimeSinceLaunch() {
@@ -100,8 +179,9 @@ public class Window {
     }
 
     public void setWireframe(boolean wireframe) {
-        this.WIREFRAME = wireframe;
-        if (WIREFRAME) {
+        this.wireframe = wireframe;
+
+        if (this.wireframe) {
             glPolygonMode(GL_FRONT, GL_LINE);
             glPolygonMode(GL_BACK, GL_LINE);
         } else {
@@ -110,8 +190,25 @@ public class Window {
         }
     }
 
+    public void setShowCursor(boolean showCursor) {
+        this.cursonEnabled = showCursor;
+
+        glfwSetInputMode(glfwWindow, GLFW_CURSOR, cursonEnabled ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+    }
+
+    public void setCullBackFaces(boolean cull) {
+        this.cullBackFaces = cull;
+
+        if (cullBackFaces) {
+            glEnable(GL_CULL_FACE);
+            glCullFace(GL_BACK);
+        } else {
+            glDisable(GL_CULL_FACE);
+        }
+    }
+
     public void setLogInfo(boolean logInfo) {
-        this.LOG_INFO = logInfo;
+        this.logInfo = logInfo;
     }
 
     public void pollEvents() {
@@ -123,30 +220,13 @@ public class Window {
     }
 
     public boolean isKeyPressed(final int key) {
-        if (key < 0 || key >= InputKeyboard.AMOUNT_OF_KEYS) {
-            return false;
-        }
-
-        return keyboard.keysPress[key];
+        return keyboard.isKeyPressed(key);
     }
 
     public boolean isKeyRepeated(final int key) {
-        if (key < 0 || key >= InputKeyboard.AMOUNT_OF_KEYS) {
-            return false;
-        }
-
-        return keyboard.keysRepeat[key];
+        return keyboard.isKeyRepeated(key);
     }
 
-//    public boolean isKeyDown(final int key) {
-//        if (key < 0 || key >= InputKeyboard.AMOUNT_OF_KEYS) {
-//            return false;
-//        }
-//
-//        return keyboard.keys[key];
-//    }
-
-    // Changed center
     public Vector2f getMousePos() {
         return new Vector2f(mouse.dx, mouse.dy);
     }
@@ -160,8 +240,8 @@ public class Window {
     }
 
     public void terminate() {
-        if (LOG_INFO) {
-            Log.logInfo("Terminating Himmel");
+        if (logInfo) {
+            Log.logInfo("<Window>: Terminating Himmel.");
         }
 
         glfwDestroyWindow(glfwWindow);
@@ -172,70 +252,7 @@ public class Window {
         return glfwWindowShouldClose(glfwWindow) == GL_TRUE;
     }
 
-    private boolean init() {
-//        System.out.println("LWJGL " + Sys.getVersion());
-
-        if (glfwInit() != GL11.GL_TRUE) {
-            Log.logError("Unable to init GLFW");
-            return false;
-        }
-
-        glfwDefaultWindowHints();
-        glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
-        glfwWindowHint(GLFW_RESIZABLE, RESIZABLE ? GL_TRUE : GL_FALSE);
-        glfwWindowHint(GLFW_SAMPLES, ANTI_ALIASING);
-
-        ByteBuffer vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-        glfwWindow = glfwCreateWindow(FULLSCREEN ? GLFWvidmode.width(vidmode) : WIDTH,
-                FULLSCREEN ? GLFWvidmode.height(vidmode) : HEIGHT,
-                TITLE, FULLSCREEN ? glfwGetPrimaryMonitor() : NULL, NULL);
-
-        if (glfwWindow == NULL) {
-            Log.logError("Unable to creat GLFW Window");
-            return false;
-        }
-
-        keyboard = new InputKeyboard();
-        mouse = new InputMouse();
-
-        glfwSetCallback(glfwWindow, keyboard);
-        glfwSetCursorPosCallback(glfwWindow, mouse);
-//        glfwSetInputMode(glfwWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-        glfwSetCursorPos(glfwWindow, 0.0d, 0.0d);
-
-        if (!FULLSCREEN) {
-//            ByteBuffer vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-            glfwSetWindowPos(
-                    glfwWindow,
-                    (GLFWvidmode.width(vidmode) - WIDTH) / 2,
-                    (GLFWvidmode.height(vidmode) - HEIGHT) / 2
-            );
-        }
-
-        glfwMakeContextCurrent(glfwWindow);
-        glfwSwapInterval(SWAP_INTERWAL);
-        glfwShowWindow(glfwWindow);
-
-        GLContext.createFromCurrent();
-
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LEQUAL);
-        glEnable(GL_BLEND);
-        glEnable(GL_MULTISAMPLE);
-//        glEnable(GL_CULL_FACE);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        if (WIREFRAME) {
-            glPolygonMode(GL_FRONT, GL_LINE);
-            glPolygonMode(GL_BACK, GL_LINE);
-        }
-
-        clearColor(new Vector4f(0.0f, 0.0f, 0.0f, 1.0f));
-
-        return true;
-    }
-
-    public void clearColor(Vector4f clearColor) {
+    public void setClearColor(Vector4f clearColor) {
         glClearColor(clearColor.x, clearColor.y, clearColor.z, clearColor.w);
     }
 
@@ -244,14 +261,14 @@ public class Window {
     }
 
     public int getWidth() {
-        return WIDTH;
+        return windowWidth;
     }
 
     public int getHeight() {
-        return HEIGHT;
+        return windowHeight;
     }
 
     public String getName() {
-        return TITLE;
+        return title;
     }
 }
