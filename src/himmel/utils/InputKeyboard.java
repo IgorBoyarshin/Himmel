@@ -2,7 +2,9 @@ package himmel.utils;
 
 import himmel.log.Log;
 import org.lwjgl.glfw.GLFW;
+
 import static org.lwjgl.glfw.GLFW.*;
+
 import org.lwjgl.glfw.GLFWKeyCallback;
 
 /**
@@ -11,8 +13,8 @@ import org.lwjgl.glfw.GLFWKeyCallback;
 public class InputKeyboard extends GLFWKeyCallback {
     public static final int AMOUNT_OF_KEYS = 350;
 
-    public boolean[] keysPress = new boolean[AMOUNT_OF_KEYS];
-    public boolean[] keysRepeat = new boolean[AMOUNT_OF_KEYS];
+    private boolean[] keysPress = new boolean[AMOUNT_OF_KEYS];
+    private boolean[] keysRepeat = new boolean[AMOUNT_OF_KEYS];
 
     public static final int HIMMEL_KEY_SPACE = GLFW_KEY_SPACE;
     public static final int HIMMEL_KEY_APOSTROPHE = GLFW_KEY_APOSTROPHE;
@@ -138,12 +140,12 @@ public class InputKeyboard extends GLFWKeyCallback {
 
     @Override
     public void invoke(long window, int key, int scancode, int action, int mods) {
-        if (key >= AMOUNT_OF_KEYS || key < 0) {
+        if (!isKeyInRange(key)) {
             Log.logError("<InputKeyboard.invoke>: key " + key + " is out of bounds.");
             return;
         }
 
-        switch(action) {
+        switch (action) {
             case GLFW.GLFW_RELEASE:
                 keysPress[key] = false;
                 keysRepeat[key] = false;
@@ -157,5 +159,17 @@ public class InputKeyboard extends GLFWKeyCallback {
                 keysRepeat[key] = true;
                 break;
         }
+    }
+
+    private boolean isKeyInRange(final int key) {
+        return (key >= 0 && key < AMOUNT_OF_KEYS);
+    }
+
+    public boolean isKeyPressed(final int key) {
+        return isKeyInRange(key) && keysPress[key];
+    }
+
+    public boolean isKeyRepeated(final int key) {
+        return isKeyInRange(key) && keysRepeat[key];
     }
 }
