@@ -116,7 +116,7 @@ public class Window {
         }
 
         glfwDefaultWindowHints();
-        glfwWindowHint(GLFW_VISIBLE, GL_TRUE);
+        glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, resizable ? GL_TRUE : GL_FALSE);
         glfwWindowHint(GLFW_SAMPLES, antiAliasing.code);
 
