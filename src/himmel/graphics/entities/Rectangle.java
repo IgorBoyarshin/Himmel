@@ -1,6 +1,7 @@
 package himmel.graphics.entities;
 
 import himmel.graphics.Shader;
+import himmel.graphics.Texture;
 import himmel.graphics.buffers.IndexBufferObject;
 import himmel.graphics.buffers.VertexArrayObject;
 import himmel.graphics.buffers.VertexBufferObject;
@@ -13,16 +14,21 @@ import himmel.utils.FloatArray;
  * Created by Igor on 08-Feb-16 at 7:09 PM.
  */
 public class Rectangle extends Object {
+    private Texture texture;
+
     public Rectangle(Vector4f color, Shader shader) {
-        super(shader, createVao(color));
+        super(shader, createVao(color, null));
+        this.texture = null;
     }
 
-    public Rectangle(Vector4f color, Matrix4f modelMatrix, Shader shader) {
-        super(modelMatrix, shader, createVao(color));
+    public Rectangle(Vector4f color, Matrix4f modelMatrix, Shader shader, Texture texture) {
+        super(modelMatrix, shader, createVao(color, texture));
+        this.texture = texture;
     }
 
-    private static VertexArrayObject createVao(Vector4f color) {
+    private static VertexArrayObject createVao(Vector4f color, Texture texture) {
         VertexArrayObject vao = new VertexArrayObject(VertexArrayObject.RenderingMode.TRIANGLES);
+        final int textureId = vao.addTexture(texture);
         vao.addVertexBufferObject(
                 new VertexBufferObject(
                         new FloatArray[]{
@@ -30,11 +36,13 @@ public class Rectangle extends Object {
                                         new Vector3f(0.0f, 0.0f, 0.0f),
                                         new Vector3f(1.0f, 1.0f, 1.0f))),
                                 new FloatArray(generateNormals()),
-                                new FloatArray(generateColors(color))
+                                new FloatArray(generateColors(color)),
+                                new FloatArray(generateUvs()),
+                                new FloatArray(new float[]{1.0f * textureId + 0.1f}, 4)
                         },
-                        new int[]{3, 3, 4},
+                        new int[]{3, 3, 4, 2, 1},
                         false),
-                new int[]{0, 1, 2});
+                new int[]{0, 1, 2, 3, 4});
         vao.setIndexBufferObject(new IndexBufferObject(generateIndices(), false));
 
         return vao;
@@ -71,6 +79,15 @@ public class Rectangle extends Object {
         return new short[]{
                 0, 1, 2,
                 0, 2, 3
+        };
+    }
+
+    private static float[] generateUvs() {
+        return new float[]{
+                0.0f, 1.0f,
+                0.0f, 0.0f,
+                1.0f, 0.0f,
+                1.0f, 1.0f
         };
     }
 

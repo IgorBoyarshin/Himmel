@@ -1,5 +1,6 @@
 package himmel.graphics.buffers;
 
+import himmel.graphics.Texture;
 import himmel.log.Log;
 
 import java.util.ArrayList;
@@ -7,9 +8,9 @@ import java.util.List;
 
 import static himmel.graphics.buffers.IndexBufferObject.ElementType;
 
-import static org.lwjgl.opengl.GL11.GL_FLOAT;
-import static org.lwjgl.opengl.GL11.GL_POINTS;
-import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glDisableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
@@ -27,6 +28,10 @@ public class VertexArrayObject {
     private List<Integer> attribArrayLocations;
     private final RenderingMode renderingMode;
     private boolean useIndexBuffer;
+    private int[] textureIds;
+
+    private final int MAX_TEXTURES = 16;
+    private final int TEXTURE_ID_OFF_CODE = -1;
 
     // TODO: fix vertexCount
     public VertexArrayObject(RenderingMode renderingMode) {
@@ -35,6 +40,8 @@ public class VertexArrayObject {
         attribArrayLocations = new ArrayList<>();
         this.renderingMode = renderingMode;
         useIndexBuffer = false;
+        textureIds = new int[MAX_TEXTURES];
+        resetTextureIds();
     }
 
     public void addVertexBufferObject(VertexBufferObject vbo, int attribLocationsForArrays[]) {
@@ -77,6 +84,44 @@ public class VertexArrayObject {
         bind();
         ibo.bind();
         unbind();
+    }
+
+    public int addTexture(Texture texture) {
+        final int slotIndex = getEmptyTextureIdSlot();
+        if (slotIndex == -1) {
+            return -1;
+        }
+
+        textureIds[slotIndex] = texture.getTID();
+        return slotIndex;
+    }
+
+    public void setTextureSlots() {
+        for (int slot = 0; slot < MAX_TEXTURES; slot++) {
+            final int textureId = textureIds[slot];
+            if (textureId != TEXTURE_ID_OFF_CODE) {
+                glActiveTexture(GL_TEXTURE0 + slot);
+                glBindTexture(GL_TEXTURE_2D, textureId);
+            }
+        }
+    }
+
+    private void resetTextureIds() {
+        final int OFF_CODE = -1;
+        for (int id = 0; id < MAX_TEXTURES; id++) {
+            textureIds[id] = OFF_CODE;
+        }
+    }
+
+    // TODO: implement Exception here for error code
+    private int getEmptyTextureIdSlot() {
+        for (int slot = 0; slot < MAX_TEXTURES; slot++) {
+            if (textureIds[slot] == TEXTURE_ID_OFF_CODE) {
+                return slot;
+            }
+        }
+
+        return -1;
     }
 
     public void enableAttribArrays() {

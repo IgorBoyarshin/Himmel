@@ -152,7 +152,7 @@ public class Texture {
         return new ImageData(imageBuffer, i.getWidth(), i.getHeight());
     }
 
-    class ImageData {
+    private class ImageData {
         public ByteBuffer imageBuffer;
         public int width;
         public int height;

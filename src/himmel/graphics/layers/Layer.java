@@ -67,6 +67,7 @@ public class Layer {
             shader.enable();
             for (VertexArrayObject vao : vaos.keySet()) {
                 List<Entity> entities = vaos.get(vao);
+                vao.setTextureSlots();
                 vao.bind();
                 vao.enableAttribArrays();
                 for (Entity entity : entities) {
