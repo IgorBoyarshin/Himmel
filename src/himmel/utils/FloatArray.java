@@ -12,10 +12,12 @@ public class FloatArray {
         this.elements = elements;
     }
 
-    public FloatArray(float element, int count) {
-        this.elements = new float[count];
+    public FloatArray(float[] block, int count) {
+        this.elements = new float[block.length * count];
         for (int i = 0; i < count; i++) {
-            elements[i] = element;
+            for (int j = 0; j < block.length; j++) {
+                elements[i * block.length + j] = block[j];
+            }
         }
     }
 
