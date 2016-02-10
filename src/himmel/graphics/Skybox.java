@@ -1,7 +1,11 @@
 package himmel.graphics;
 
-import himmel.graphics.buffers.Buffer;
-import himmel.graphics.buffers.VertexArray;
+import himmel.graphics.buffers.VertexBufferObject;
+import himmel.graphics.buffers.VertexArrayObject;
+import himmel.graphics.entities.Entity;
+import himmel.graphics.textures.CubeTexture;
+import himmel.graphics.textures.Texture;
+import himmel.graphics.textures.TextureParameters;
 import himmel.math.Matrix4f;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -11,6 +15,7 @@ import static org.lwjgl.opengl.GL13.*;
  * Created by Igor on 10-Aug-15.
  */
 public class Skybox {
+
     private Shader shader;
     private Texture cubeTexture;
 
@@ -18,11 +23,11 @@ public class Skybox {
     private String projectionMatrixUniformName;
     private String cubeTextureUniformName;
 
-    private VertexArray vao;
+    private VertexArrayObject vao;
 
     public Skybox(String[] paths, Shader shader,
-                  String projectionMatrixUniformName, String viewMatrixUniformName, String cubeTextureUniformName) {
-        this.cubeTexture = new Texture(paths);
+                   String projectionMatrixUniformName, String viewMatrixUniformName, String cubeTextureUniformName) {
+        this.cubeTexture = new CubeTexture(paths, new TextureParameters(TextureParameters.ComponentType.RGB));
         this.shader = shader;
         this.viewMatrixUniformName = viewMatrixUniformName;
         this.projectionMatrixUniformName = projectionMatrixUniformName;
@@ -37,11 +42,13 @@ public class Skybox {
         glDepthFunc(GL_LEQUAL);
         shader.enable();
         vao.bind();
+        vao.enableAttribArrays();
         glActiveTexture(GL_TEXTURE0); // Change here for multiple
         glBindTexture(GL_TEXTURE_CUBE_MAP, cubeTexture.getTID());
 
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
+        vao.disableAttribArrays();
         vao.unbind();
         shader.disable();
         glDepthFunc(GL_LESS);
@@ -69,7 +76,7 @@ public class Skybox {
         shader.setUniformMat4fv(projectionMatrixUniformName, projectionMatrix.toFloatBuffer());
     }
 
-    private static VertexArray initVao() {
+    private static VertexArrayObject initVao() {
         float[] skyboxVertices = {
                 -1.0f, 1.0f, -1.0f,
                 -1.0f, -1.0f, -1.0f,
@@ -114,8 +121,10 @@ public class Skybox {
                 1.0f, -1.0f, 1.0f
         };
 
-        VertexArray vao = new VertexArray();
-        vao.addBuffer(new Buffer(skyboxVertices, 3), 0);
+        VertexArrayObject vao = new VertexArrayObject(VertexArrayObject.RenderingMode.TRIANGLES);
+        vao.addVertexBufferObject(
+                new VertexBufferObject(skyboxVertices, 3, false),
+                new int[]{0});
         return vao;
     }
 }

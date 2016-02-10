@@ -1,7 +1,7 @@
 package himmel.graphics.entities;
 
 import himmel.graphics.Shader;
-import himmel.graphics.Texture;
+import himmel.graphics.textures.Texture;
 import himmel.graphics.buffers.IndexBufferObject;
 import himmel.graphics.buffers.VertexArrayObject;
 import himmel.graphics.buffers.VertexBufferObject;

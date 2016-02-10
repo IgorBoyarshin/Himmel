@@ -1,6 +1,6 @@
 package himmel.graphics.buffers;
 
-import himmel.graphics.Texture;
+import himmel.graphics.textures.Texture;
 import himmel.log.Log;
 
 import java.util.ArrayList;
