@@ -6,6 +6,7 @@ import himmel.math.Vector2f;
 import himmel.math.Vector3f;
 import himmel.math.Vector4f;
 import himmel.utils.ShaderUtils;
+import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -90,6 +91,22 @@ public class Shader {
 
     public void setUniformMat4fv(String name, FloatBuffer matrices) {
         glUniformMatrix4fv(getUniform(name), false, matrices);
+    }
+
+    public void setDefaultSamplerLocations(String samplerName, int startingIndex, int amount) {
+        if (amount == 1) {
+            setUniform1i(samplerName, startingIndex);
+        } else if (amount > 1) {
+            int[] values = new int[amount];
+            for (int i = 0; i < amount; i++) {
+                values[i] = startingIndex + i;
+            }
+            IntBuffer textureIDs = BufferUtils.createIntBuffer(values.length);
+            textureIDs.put(values);
+            textureIDs.rewind();
+
+            setUniform1iv(samplerName, textureIDs);
+        }
     }
 
     public void enable() {
