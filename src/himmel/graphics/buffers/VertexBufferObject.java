@@ -104,7 +104,8 @@ public class VertexBufferObject {
 
     public int getComponentCountForArray(int arrayIndex) {
         if (arrayIndex >= componentCount.length || arrayIndex < 0) {
-            Log.logError("Invalid component count access(" + arrayIndex + ") in buffer.");
+            Log.logError("<VertexBufferObject.getComponentCountForArray>: Invalid component count access("
+                    + arrayIndex + ") in buffer.");
             return 0;
         }
 

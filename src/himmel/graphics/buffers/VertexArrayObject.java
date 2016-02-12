@@ -2,9 +2,12 @@ package himmel.graphics.buffers;
 
 import himmel.graphics.textures.Texture;
 import himmel.log.Log;
+import sun.security.provider.certpath.Vertex;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static himmel.graphics.buffers.IndexBufferObject.ElementType;
 
@@ -25,7 +28,7 @@ public class VertexArrayObject {
     private final int arrayId;
     private List<VertexBufferObject> vbos;
     private IndexBufferObject ibo;
-    private List<Integer> attribArrayLocations;
+    private Map<VertexBufferObject, int[]> attribArrayLocations;
     private final RenderingMode renderingMode;
     private boolean useIndexBuffer;
     private int[] textureIds;
@@ -37,7 +40,7 @@ public class VertexArrayObject {
     public VertexArrayObject(RenderingMode renderingMode) {
         arrayId = glGenVertexArrays();
         vbos = new ArrayList<>();
-        attribArrayLocations = new ArrayList<>();
+        attribArrayLocations = new HashMap<>();
         this.renderingMode = renderingMode;
         useIndexBuffer = false;
         textureIds = new int[MAX_TEXTURES];
@@ -45,8 +48,12 @@ public class VertexArrayObject {
     }
 
     public void addVertexBufferObject(VertexBufferObject vbo, int attribLocationsForArrays[]) {
-        addAttribArrayLocations(attribLocationsForArrays);
+        addAttribArrayLocations(attribLocationsForArrays, vbo);
+        submitVertexBufferObject(vbo, attribLocationsForArrays);
+        vbos.add(vbo);
+    }
 
+    private void submitVertexBufferObject(VertexBufferObject vbo, int attribLocationsForArrays[]) {
         bind();
         vbo.bind();
 
@@ -66,8 +73,13 @@ public class VertexArrayObject {
 
         vbo.unbind();
         unbind();
+    }
 
-        vbos.add(vbo);
+    public void replaceVertexBufferObject(VertexBufferObject oldVbo, VertexBufferObject newVbo, int attribLocationsForArrays[]) {
+        removeAttribArrayLocations(oldVbo);
+        vbos.remove(oldVbo);
+
+        addVertexBufferObject(newVbo, attribLocationsForArrays);
     }
 
     public void addVertexBufferObjects(VertexBufferObject vbos[], int attribLocationsForArrays[][]) {
@@ -125,23 +137,29 @@ public class VertexArrayObject {
     }
 
     public void enableAttribArrays() {
-        for (int i : attribArrayLocations) {
-            glEnableVertexAttribArray(i);
+        for (VertexBufferObject vbo : attribArrayLocations.keySet()) {
+            int[] attribs = attribArrayLocations.get(vbo);
+            for (int i : attribs) {
+                glEnableVertexAttribArray(i);
+            }
         }
     }
 
     public void disableAttribArrays() {
-        for (int i : attribArrayLocations) {
-            glDisableVertexAttribArray(i);
+        for (VertexBufferObject vbo : attribArrayLocations.keySet()) {
+            int[] attribs = attribArrayLocations.get(vbo);
+            for (int i : attribs) {
+                glDisableVertexAttribArray(i);
+            }
         }
     }
 
-    private void addAttribArrayLocations(int[] attribArrayLocations) {
-        for (int attribArrayLocation : attribArrayLocations) {
-            if (!this.attribArrayLocations.contains(attribArrayLocation)) {
-                this.attribArrayLocations.add(attribArrayLocation);
-            }
-        }
+    private void addAttribArrayLocations(int[] attribArrayLocations, VertexBufferObject vbo) {
+        this.attribArrayLocations.put(vbo, attribArrayLocations);
+    }
+
+    private void removeAttribArrayLocations(VertexBufferObject vbo) {
+        this.attribArrayLocations.remove(vbo);
     }
 
     public RenderingMode getRenderingMode() {
