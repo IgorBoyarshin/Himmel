@@ -98,6 +98,7 @@ public class VertexArrayObject {
         unbind();
     }
 
+    // TODO: replace with tid
     public int addTexture(Texture texture) {
         final int slotIndex = getEmptyTextureIdSlot();
         if (slotIndex == -1) {

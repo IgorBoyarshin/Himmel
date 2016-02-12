@@ -21,6 +21,7 @@ public class Rectangle extends EntityWithMatrix {
         this.texture = null;
     }
 
+    // TODO: no need for color if a texture is present
     public Rectangle(Vector4f color, Matrix4f modelMatrix, Shader shader, Texture texture) {
         super(modelMatrix, shader, createVao(color, texture));
         this.texture = texture;
