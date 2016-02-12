@@ -7,15 +7,15 @@ import himmel.math.Matrix4f;
 /**
  * Created by Igor on 07-Feb-16 at 9:01 PM.
  */
-public abstract class Object extends Entity {
+public abstract class EntityWithMatrix extends Entity {
     protected Matrix4f modelMatrix;
 
-    public Object(Shader shader, VertexArrayObject vao) {
+    public EntityWithMatrix(Shader shader, VertexArrayObject vao) {
         super(shader, vao);
         this.modelMatrix = Matrix4f.identity();
     }
 
-    public Object(Matrix4f modelMatrix, Shader shader, VertexArrayObject vao) {
+    public EntityWithMatrix(Matrix4f modelMatrix, Shader shader, VertexArrayObject vao) {
         super(shader, vao);
         this.modelMatrix = modelMatrix;
     }

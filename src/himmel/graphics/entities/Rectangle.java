@@ -13,7 +13,7 @@ import himmel.utils.FloatArray;
 /**
  * Created by Igor on 08-Feb-16 at 7:09 PM.
  */
-public class Rectangle extends Object {
+public class Rectangle extends EntityWithMatrix {
     private Texture texture;
 
     public Rectangle(Vector4f color, Shader shader) {
@@ -90,9 +90,4 @@ public class Rectangle extends Object {
                 1.0f, 1.0f
         };
     }
-
-//    @Override
-//    public void setShaderParameters() {
-//        shader.setUniformMat4f("ml_matrix", modelMatrix);
-//    }
 }

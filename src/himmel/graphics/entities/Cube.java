@@ -12,7 +12,7 @@ import himmel.utils.FloatArray;
 /**
  * Created by Igor on 07-Feb-16 at 10:17 PM.
  */
-public class Cube extends Object {
+public class Cube extends EntityWithMatrix {
 
     public Cube(Vector4f color, Shader shader) {
         super(shader, createVao(color));
@@ -159,9 +159,4 @@ public class Cube extends Object {
                 4 * 5 + 0, 4 * 5 + 1, 4 * 5 + 2, 4 * 5 + 0, 4 * 5 + 2, 4 * 5 + 3
         };
     }
-
-//    @Override
-//    public void setShaderParameters() {
-//        shader.setUniformMat4f("ml_matrix", modelMatrix);
-//    }
 }
