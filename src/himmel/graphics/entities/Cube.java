@@ -160,8 +160,8 @@ public class Cube extends Object {
         };
     }
 
-    @Override
-    public void setShaderParameters() {
-        shader.setUniformMat4f("ml_matrix", modelMatrix);
-    }
+//    @Override
+//    public void setShaderParameters() {
+//        shader.setUniformMat4f("ml_matrix", modelMatrix);
+//    }
 }

@@ -33,5 +33,7 @@ public abstract class Object extends Entity {
     }
 
     @Override
-    public abstract void setShaderParameters();
+    public void setShaderParameters() {
+        shader.setUniformMat4f("ml_matrix", modelMatrix);
+    }
 }
