@@ -7,8 +7,8 @@ import himmel.graphics.buffers.VertexArrayObject;
  * Created by Igor on 05-Feb-16 at 7:19 PM.
  */
 public abstract class Entity {
-    protected Shader shader;
-    protected VertexArrayObject vao;
+    protected final Shader shader;
+    protected final VertexArrayObject vao;
 
     public Entity(Shader shader, VertexArrayObject vao) {
         this.shader = shader;
