@@ -19,8 +19,8 @@ public class TextureParameters {
 
     public TextureParameters(ComponentType componentType) {
         this.componentType = componentType;
-        this.filteringTypeMin = FilteringType.LINEAR;
-        this.filteringTypeMag = FilteringType.LINEAR;
+        this.filteringTypeMin = FilteringType.LINEAR_MIPMAP_LINEAR;
+        this.filteringTypeMag = FilteringType.LINEAR_MIPMAP_LINEAR;
         this.textureWrapping = TextureWrapping.CLAMP_TO_EDGE;
         this.lodBias = -0.2f;
     }
